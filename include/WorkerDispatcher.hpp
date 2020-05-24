@@ -1,33 +1,80 @@
-#include <BaseWorker.hpp>
-// #include <type_traits>
+#ifndef WORKER_DISPATCHER_HPP
+#define WORKER_DISPATCHER_HPP
+
+#include <unordered_map>// #include <type_traits>
+#include <memory>
+#include <thread>
 // #include <cstddef>
 
 // template <typename T, typename... Ts>
 // constexpr std::size_t Index_v = Index<T, Ts...>::value;
 
+enum class WorkerSetting {
+  worker_off,
+  worker_on,
+  debug_off,
+};
+
+union WorkerSettingValue {
+  double decimal[4];
+  bool boolean;
+  int64_t integer[4];
+  char message[20];
+};
+
+class BaseWorker;
+
+class WorkerSystemConfiguration {
+public:
+std::unordered_map<WorkerSetting,WorkerSettingValue> configurationMap_;
+};
+
 template <typename ...Workers>
 class WorkerDispatcher {
-  std::vector<std::unique_ptr<BaseWorker>> workers_;
+private:
+
+  const std::chrono::seconds watchdogInterval_{1};
+
+  std::vector<BaseWorker*> workers_;
   std::thread dispatcherThread_;
   bool on_{true};
+
+
+  void printWorkers() {
+    ((std::cout << " name type: " << typeid(Workers).name() << std::endl), ...);
+  }
+
+  void instantiate() {
+    (workers_.push_back(new Workers(*this)), ...);
+  }
+
+  void prepare() {
+    int i = 0;
+    (std::invoke(&Workers::prepare,dynamic_cast<Workers*>(workers_[i++])), ...);
+  }
+
+  void startWorkers() {
+    int i = 0;
+    (std::invoke(&Workers::start,dynamic_cast<Workers*>(workers_[i++])), ...);
+  }
+
   public:
   WorkerDispatcher() {
     std::cout << "Starting Dispatcher" << std::endl;
+    printWorkers();
+    instantiate();
+    prepare();
+    startWorkers();
   }
+
 
   void run() {
     std::cout << "starting WorkerDispatcher" << std::endl;
-    (workers_.push_back(std::make_unique<Workers>()), ...);
     std::cout << "created vector of workers" << std::endl;
-    ((std::cout << " name type: " << typeid(Workers).name() << std::endl), ...);
     // ((std::cout << " name object: " << typeid(Workers).name() << std::endl), ...);
     // (dynamic_cast<Workers>(workers_[i++]).run(), ...);
-    int i = 0;
-    (std::invoke(&Workers::prepare,dynamic_cast<Workers*>(workers_[i++].get())), ...);
-    i = 0;
-    (std::invoke(&Workers::start,dynamic_cast<Workers*>(workers_[i++].get())), ...);
     while (on_) {
-      std::this_thread::sleep_for(std::chrono::seconds(1));
+      std::this_thread::sleep_for(watchdogInterval_);
     }
   }
   void start() {
@@ -36,9 +83,13 @@ class WorkerDispatcher {
 
   void stop() {
     int i = 0;
-    (std::invoke(&Workers::stop,dynamic_cast<Workers*>(workers_[i++].get())), ...);
+    (std::invoke(&Workers::stop,dynamic_cast<Workers*>(workers_[i++])), ...);
     on_ = false;
-    join();
+  }
+
+  void config(WorkerSystemConfiguration &configuration) {
+    int i = 0;
+    (std::invoke(&Workers::config,dynamic_cast<Workers*>(workers_[i++],configuration)), ...);
   }
 
   void join() {
@@ -47,21 +98,19 @@ class WorkerDispatcher {
     }
   }
 
-  void prepareWorkers() {
-    for (auto &worker: workers_) {
-      worker->prepare();
-    }
-  }
-  void beginRunLoop() {
-    for (auto &worker: workers_) {
-      worker->run();
-    }
+  template <typename Data, typename ...ReceivingWorker>
+  void sendData(Data &data) {
+        int i = 0;
+    (std::invoke(&ReceivingWorker::receiveData,dynamic_cast<Workers*>(workers_[i++].get(),data)), ...);
   }
 
-  void runOnAllWorkers(WorkerMethod method) {
-    for (auto &worker : workers_) {
 
-      std::invoke(method, worker);
-    }
-  }
 };
+
+class TestWorker1;
+class TestWorker2;
+class TestWorker3;
+
+#define Dispatcher WorkerDispatcher<TestWorker1, TestWorker2, TestWorker3>
+
+#endif
