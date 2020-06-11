@@ -63,8 +63,6 @@ private:
     std::cout << "Starting Dispatcher" << std::endl;
     printWorkers();
     instantiate();
-    prepare();
-    startWorkers();
   }
 
 
@@ -79,6 +77,8 @@ private:
   }
   void start() {
     dispatcherThread_ = std::thread(&WorkerDispatcher::run,this);
+    prepare();
+    startWorkers();
   }
 
   void stop() {
