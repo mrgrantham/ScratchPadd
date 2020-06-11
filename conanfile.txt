@@ -1,5 +1,7 @@
 [requires]
 boost/1.71.0@conan/stable
+glfw/3.3@bincrafters/stable
+imgui/1.76
 
 [generators]
 cmake
