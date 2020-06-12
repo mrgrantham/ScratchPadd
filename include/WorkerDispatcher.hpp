@@ -1,5 +1,4 @@
-#ifndef WORKER_DISPATCHER_HPP
-#define WORKER_DISPATCHER_HPP
+#pragma once
 
 #include <unordered_map>// #include <type_traits>
 #include <memory>
@@ -112,5 +111,3 @@ class TestWorker2;
 class TestWorker3;
 
 #define Dispatcher WorkerDispatcher<TestWorker1, TestWorker2, TestWorker3>
-
-#endif

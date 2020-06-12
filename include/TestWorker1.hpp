@@ -1,5 +1,5 @@
-#ifndef TEST_WORKER_1_HPP
-#define TEST_WORKER_1_HPP
+#pragma once
+
 
 #include <WorkerSystem.hpp>
 
@@ -17,5 +17,3 @@ public:
   }
 
 };
-
-#endif

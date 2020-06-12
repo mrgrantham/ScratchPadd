@@ -1,5 +1,5 @@
-#ifndef BASEWORKER_HPP
-#define BASEWORKER_HPP
+#pragma once
+
 #include <WorkerDispatcher.hpp>
 #include <chrono>
 #include <thread>
@@ -53,5 +53,3 @@ class BaseWorker {
     // dispatcher_<Workers>->sendWork()
   }
 };
-
-#endif

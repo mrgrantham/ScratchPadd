@@ -1,5 +1,5 @@
-#ifndef TEST_WORKER_2_HPP
-#define TEST_WORKER_2_HPP
+#pragma once
+
 
 #include <WorkerSystem.hpp>
 
@@ -16,5 +16,3 @@ class TestWorker2 : public BaseWorker {
     std::cout << "Destroying: " << __PRETTY_FUNCTION__ << std::endl;
   }
 };
-
-#endif

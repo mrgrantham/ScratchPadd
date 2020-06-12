@@ -1,6 +1,3 @@
-#ifndef WORKER_SYSTEM_HPP
-#define WORKER_SYSTEM_HPP
+#pragma once
 #include <WorkerDispatcher.hpp>
 #include <BaseWorker.hpp>
-
-#endif
