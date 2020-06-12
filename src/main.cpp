@@ -42,7 +42,8 @@ void testGLFW() {
   }
 
   glfwMakeContextCurrent(window);
-
+  // can only get a printable version string for OpenGL
+  // after a context was created and assigned
   char * version = (char*)glGetString(GL_VERSION);
   std::cout << "GL VERSION: " << version << std::endl;
 
