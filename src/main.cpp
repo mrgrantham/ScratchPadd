@@ -4,7 +4,7 @@
 #include <boost/program_options.hpp>
 // #include <WorkerSystem.hpp>
 // #include <Workers.hpp>
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 #include <signal.h> //  our new library 
 volatile sig_atomic_t flag = 0;
 void signal_handler(int sig);
@@ -65,15 +65,15 @@ static int generateShaders(std::string &vertexShader, std::string &fragmentShade
 		spdlog::error("Error in glLinkProgram: {}",message.get());
 		return 0;
 	}
-  const char* position_attribute_name = "position";
-  // glBindAttribLocation(program, 0, "position");
-  GLint attribute_position;
-	attribute_position = glGetAttribLocation(program, position_attribute_name);
-  if (attribute_position == -1) {
-		spdlog::error("Could not bind attribute '{}'",position_attribute_name);
-	}
+  // const char* position_attribute_name = "position";
+  // // glBindAttribLocation(program, 0, "position");
+  // GLint attribute_position;
+	// attribute_position = glGetAttribLocation(program, position_attribute_name);
+  // if (attribute_position == -1) {
+	// 	spdlog::error("Could not bind attribute '{}'",position_attribute_name);
+	// }
   glValidateProgram(program);
-	glEnableVertexAttribArray(attribute_position);
+	// glEnableVertexAttribArray(attribute_position);
 
   // now that the shaders are linked into a program
   // we can delete them
@@ -90,15 +90,20 @@ void testGLFW() {
     exit(-1);
   }
 
-
-  window = glfwCreateWindow(1366, 768, "Hello World", nullptr, nullptr);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  window = glfwCreateWindow(1366, 768, "ScratchPaad", nullptr, nullptr);
   if (!window) {
+    spdlog::error("No window created!");
     glfwTerminate();
     exit(-1);
   }
 
   glfwMakeContextCurrent(window);
 
+  glewExperimental = GL_TRUE;
   GLenum status = glewInit();
   if (status != GLEW_OK) {
       spdlog::error("Error: {}\n", glewGetErrorString(status));
@@ -111,22 +116,24 @@ void testGLFW() {
   spdlog::info("GL VERSION: {}", version);
   spdlog::info("Status: Using GLEW {}\n", glewGetString(GLEW_VERSION));
 
+  // glEnable(GL_DEPTH_TEST);
+
   float positions[] = {
       -0.5f,-0.5f,
        0.0f, 0.5f,
        0.5f,-0.5f,
   };
 
-  unsigned int buffer;
+  GLuint buffer;
   glGenBuffers(1, &buffer);
-  glBindBuffer(GL_ARRAY_BUFFER,buffer);
   glBufferData(GL_ARRAY_BUFFER,6 * sizeof(float),positions,GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER,buffer);
   glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,sizeof(float) * 2,0);
   std::string vertexShader =
-    "#version 120\n"
+    "#version 330 core\n"
     "\n"
-    "attribute vec4 position;\n"
+    "layout(location = 0) in vec4 position;\n"
     "\n"
     "void main()\n"
     "{\n"
@@ -134,12 +141,13 @@ void testGLFW() {
     "}\n";
 
   std::string fragmentShader =
-    "#version 120\n"
+    "#version 330 core\n"
     "\n"
+    "layout(location = 0) out vec4 color;"
     "\n"
     "void main()\n"
     "{\n"
-    "   gl_FragColor =  vec4(1.0,0.5,0.5,0.5);\n"
+    "   color =  vec4(1.0,0.5,0.5,0.5);\n"
     "}\n";
 
   unsigned int shaders = generateShaders(vertexShader, fragmentShader);
@@ -151,5 +159,6 @@ void testGLFW() {
     glfwPollEvents();
   }
 
+  glDeleteProgram(shaders);
   glfwTerminate();
 }
