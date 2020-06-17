@@ -15,5 +15,5 @@ if (APPLE)
   target_compile_definitions(${PROJECT_NAME} PUBLIC GL_SILENCE_DEPRECATION)
 endif ()
 
-include_directories(${Boost_INCLUDE_DIRS} include)
+include_directories(include)
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
