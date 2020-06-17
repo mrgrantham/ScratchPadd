@@ -16,7 +16,7 @@ void testGLFW();
 int main(int argc, char **argv) {
   std::cout << "Starting WorkerSystem" <<std::endl;
   signal(SIGINT, signal_handler); 
-  spdlog::info("Welcome to SCRATCHPAAD!");
+  spdlog::info("Welcome to SCRATCHPADD!");
   testGLFW();
   // dispatcher.start();
   // dispatcher.join();
