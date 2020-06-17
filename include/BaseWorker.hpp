@@ -50,6 +50,6 @@ class BaseWorker {
 
   template <typename Work, typename ...Workers>
   void sendWork(Work &work) {
-    // dispatcher_<Workers>->sendWork()
+    dispatcher_.sendWork<Work, Workers...>(work);
   }
 };

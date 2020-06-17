@@ -103,6 +103,11 @@ private:
     (std::invoke(&ReceivingWorker::receiveData,dynamic_cast<Workers*>(workers_[i++].get(),data)), ...);
   }
 
+  template <typename Work, typename ...ReceivingWorker>
+  void sendWork(Work &work) {
+        int i = 0;
+    (std::invoke(&ReceivingWorker::receiveWork,dynamic_cast<Workers*>(workers_[i++].get(),work)), ...);
+  }
 
 };
 
