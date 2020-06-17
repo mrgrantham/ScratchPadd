@@ -2,6 +2,8 @@
 boost/1.71.0@conan/stable
 glfw/3.3@bincrafters/stable
 imgui/1.76
+spdlog/1.6.1
+glew/2.1.0@bincrafters/stable
 
 [generators]
 cmake
