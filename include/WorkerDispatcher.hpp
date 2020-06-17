@@ -111,8 +111,8 @@ private:
 
 };
 
-class TestWorker1;
+class DisplayPadd;
 class TestWorker2;
 class TestWorker3;
 
-#define Dispatcher WorkerDispatcher<TestWorker1, TestWorker2, TestWorker3>
+#define Dispatcher WorkerDispatcher<DisplayPadd, TestWorker2, TestWorker3>

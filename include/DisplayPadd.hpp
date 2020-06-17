@@ -3,16 +3,16 @@
 
 #include <WorkerSystem.hpp>
 
-class TestWorker1 : public BaseWorker {
+class DisplayPadd : public BaseWorker {
 public:
   virtual void prepare() {
     std::cout << "Preparing: " << __PRETTY_FUNCTION__ << std::endl;
     workerName_ = __PRETTY_FUNCTION__;
   }
-  TestWorker1(Dispatcher &dispatcher) : BaseWorker(dispatcher) {
+  DisplayPadd(Dispatcher &dispatcher) : BaseWorker(dispatcher) {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
   }
-  virtual ~TestWorker1() {
+  virtual ~DisplayPadd() {
     std::cout << "Destroying: " << __PRETTY_FUNCTION__ << std::endl;
   }
 
