@@ -83,6 +83,16 @@ static int generateShaders(std::string &vertexShader, std::string &fragmentShade
   return program;
 }
 
+static void clearOpenGLErrors() {
+  while (glGetError() != GL_NO_ERROR) {}
+}
+
+static void checkOpenGLErrors() {
+  while (GLenum error = glGetError()) {
+    spdlog::error("OPENGL ERROR: (0x{0:x})",error);
+  }
+}
+
 void testGLFW() {
   GLFWwindow *window;
   if (!glfwInit()) {
@@ -100,7 +110,6 @@ void testGLFW() {
     glfwTerminate();
     exit(-1);
   }
-
   glfwMakeContextCurrent(window);
 
   glewExperimental = GL_TRUE;
@@ -124,12 +133,20 @@ void testGLFW() {
        0.5f,-0.5f,
   };
 
-  GLuint buffer;
+  GLuint buffer = 0;
   glGenBuffers(1, &buffer);
-  glBufferData(GL_ARRAY_BUFFER,6 * sizeof(float),positions,GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER,buffer);
+
+  glBufferData(GL_ARRAY_BUFFER,6 * sizeof(float),positions,GL_STATIC_DRAW);
+GLuint vao = 0;
+glGenVertexArrays(1, &vao);
+glBindVertexArray(vao);
+glEnableVertexAttribArray(0);
+glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+
   glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,sizeof(float) * 2,0);
+
   std::string vertexShader =
     "#version 330 core\n"
     "\n"
@@ -153,6 +170,7 @@ void testGLFW() {
   unsigned int shaders = generateShaders(vertexShader, fragmentShader);
   glUseProgram(shaders);
   while(!glfwWindowShouldClose(window)) {
+    checkOpenGLErrors();
     glClear(GL_COLOR_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLES,0,3);
     glfwSwapBuffers(window);
