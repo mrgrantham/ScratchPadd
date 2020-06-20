@@ -5,12 +5,14 @@
 #include <spdlog/spdlog.h>
 #include <signal.h> //  our new library 
 #include <ScratchPaddSystem.hpp>
+#include <Timer.hpp>
 volatile sig_atomic_t flag = 0;
 void signal_handler(int sig);
 
 
 
 int main(int argc, char **argv) {
+  SCOPED_METHOD_TIMER();
   signal(SIGINT, signal_handler); 
   ScratchPadd::System<SCRATCHPADD_GL4> SPSystem;
   spdlog::info("Welcome to SCRATCHPADD!");
@@ -19,7 +21,6 @@ int main(int argc, char **argv) {
   SPSystem.start();
   SPSystem.stop();
   }
-
 }
 
 void signal_handler(int sig){ // can be called asynchronously
