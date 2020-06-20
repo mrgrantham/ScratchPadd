@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.13)
 project(scratchpadd)
 set(CMAKE_CXX_STANDARD 20)
 
+message("Language Version: C++${CMAKE_CXX_STANDARD}")
 
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
@@ -15,5 +16,6 @@ if (APPLE)
   target_compile_definitions(${PROJECT_NAME} PUBLIC GL_SILENCE_DEPRECATION)
 endif ()
 
-include_directories(include)
+target_include_directories(${PROJECT_NAME} 
+        PUBLIC include)
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
