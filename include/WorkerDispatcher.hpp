@@ -8,6 +8,8 @@
 // template <typename T, typename... Ts>
 // constexpr std::size_t Index_v = Index<T, Ts...>::value;
 
+namespace ScratchPadd {
+
 enum class WorkerSetting {
   worker_off,
   worker_on,
@@ -28,19 +30,20 @@ public:
 std::unordered_map<WorkerSetting,WorkerSettingValue> configurationMap_;
 };
 
-template <typename ...Workers>
-class WorkerDispatcher {
+template <typename Workers>
+class Dispatcher {
 private:
 
   const std::chrono::seconds watchdogInterval_{1};
 
-  std::vector<BaseWorker*> workers_;
+  Workers workers_;
   std::thread dispatcherThread_;
   bool on_{true};
 
 
   void printWorkers() {
     ((std::cout << " name type: " << typeid(Workers).name() << std::endl), ...);
+    std::apply([](Ts const&... tupleArgs){std::}, workers_)
   }
 
   void instantiate() {
@@ -58,7 +61,7 @@ private:
   }
 
   public:
-  WorkerDispatcher() {
+  Dispatcher() {
     std::cout << "Starting Dispatcher" << std::endl;
     printWorkers();
     instantiate();
@@ -66,7 +69,7 @@ private:
 
 
   void run() {
-    std::cout << "starting WorkerDispatcher" << std::endl;
+    std::cout << "starting Dispatcher" << std::endl;
     std::cout << "created vector of workers" << std::endl;
     // ((std::cout << " name object: " << typeid(Workers).name() << std::endl), ...);
     // (dynamic_cast<Workers>(workers_[i++]).run(), ...);
@@ -75,7 +78,7 @@ private:
     }
   }
   void start() {
-    dispatcherThread_ = std::thread(&WorkerDispatcher::run,this);
+    dispatcherThread_ = std::thread(&Dispatcher::run,this);
     prepare();
     startWorkers();
   }
@@ -109,10 +112,12 @@ private:
     (std::invoke(&ReceivingWorker::receiveWork,dynamic_cast<Workers*>(workers_[i++].get(),work)), ...);
   }
 
+template <typename T>
+static Dispatcher &get() {
+  static Dispatcher<T> dispatcher;
+  return dispatcher;
+}
+
 };
 
-class DisplayPadd;
-class TestWorker2;
-class TestWorker3;
-
-#define Dispatcher WorkerDispatcher<DisplayPadd, TestWorker2, TestWorker3>
+}

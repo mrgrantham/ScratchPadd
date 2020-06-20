@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GL.hpp>
 #include <DisplayPadd.hpp>
-#include <TestWorker2.hpp>
-#include <TestWorker3.hpp>
+#include <StoryPadd.hpp>
+#include <AudioPadd.hpp>

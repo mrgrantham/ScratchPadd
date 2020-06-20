@@ -1,26 +1,41 @@
 #pragma once
 
-#include <WorkerDispatcher.hpp>
 #include <chrono>
 #include <thread>
 #include <memory>
+#include <spdlog/spdlog.h>
 
+inline std::string className(const std::string& classMethod)
+{
+    size_t scopeResolutionOpIndex = classMethod.find("::");
+    if (scopeResolutionOpIndex == std::string::npos) {
+        return "::";
+    }
+    size_t classNameStartIndex = classMethod.substr(0,scopeResolutionOpIndex).rfind(" ") + 1;
+    size_t classNameLength = scopeResolutionOpIndex - classNameStartIndex;
+
+    return classMethod.substr(classNameStartIndex,classNameLength);
+}
+
+#define __CLASS_NAME__ className(__PRETTY_FUNCTION__)
 
 class BaseWorker {
   protected:
   bool on_{true};
   std::string workerName_;
   std::thread workerThread_;
-  Dispatcher &dispatcher_;
   public:
-  BaseWorker(Dispatcher &dispatcher): dispatcher_(dispatcher) {
-    workerName_ = __PRETTY_FUNCTION__;
+  BaseWorker() {
+    workerName_ = __CLASS_NAME__;
   }
   virtual ~BaseWorker() {
-    std::cout << "Destroying: " << __PRETTY_FUNCTION__ << std::endl;
+    // spdlog gets torn down before the destructor
+    // need cout in order to know about destructors called
+    // spdlog::info("Destroying: {}", __CLASS_NAME__);
+    std::cout <<  "Destroying: " << __CLASS_NAME__ << std::endl;
   }
   void start() {
-    std::cout << "Starting: " << workerName_ << std::endl;
+    spdlog::info("Starting: {}", workerName_ );
     workerThread_ = std::thread(&BaseWorker::run,this);
   }
   virtual void config(){}
@@ -32,24 +47,15 @@ class BaseWorker {
   void run() {
     starting();
     while (on_) {
-      std::cout << "working: " << workerName_ << std::endl;
+      spdlog::info("Working: {}", workerName_);
       std::this_thread::sleep_for(std::chrono::seconds(2));
     }
     finishing();
   }
 
   void stop() {
+    spdlog::info("Stopping: {}", workerName_ );
     on_ = false;
     workerThread_.join();
-  }
-
-  template <typename Data, typename ...Workers>
-  void sendData(Data &data) {
-    dispatcher_.sendData<Data,Workers...>(data);
-  }
-
-  template <typename Work, typename ...Workers>
-  void sendWork(Work &work) {
-    dispatcher_.sendWork<Work, Workers...>(work);
   }
 };

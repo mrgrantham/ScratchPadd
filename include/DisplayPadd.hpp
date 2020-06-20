@@ -1,19 +1,19 @@
 #pragma once
+#include <BaseWorker.hpp>
+#include <spdlog/spdlog.h>
 
-
-#include <WorkerSystem.hpp>
-
+template <typename T>
 class DisplayPadd : public BaseWorker {
 public:
-  virtual void prepare() {
-    std::cout << "Preparing: " << __PRETTY_FUNCTION__ << std::endl;
-    workerName_ = __PRETTY_FUNCTION__;
+  virtual void prepare() override {
+    spdlog::info("Preparing: {}", __CLASS_NAME__ );
+    workerName_ = __CLASS_NAME__;
   }
-  DisplayPadd(Dispatcher &dispatcher) : BaseWorker(dispatcher) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+  DisplayPadd() : BaseWorker() {
+    spdlog::info("Constructing: {}",__CLASS_NAME__ );
   }
   virtual ~DisplayPadd() {
-    std::cout << "Destroying: " << __PRETTY_FUNCTION__ << std::endl;
+    spdlog::info("Destroying: {}", __CLASS_NAME__);
   }
 
 };
