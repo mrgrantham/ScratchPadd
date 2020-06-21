@@ -19,6 +19,8 @@ inline std::string className(const std::string& classMethod)
 
 #define __CLASS_NAME__ className(__PRETTY_FUNCTION__)
 
+namespace ScratchPadd {
+
 class BaseWorker {
   protected:
   bool on_{true};
@@ -61,3 +63,5 @@ class BaseWorker {
     workerThread_.join();
   }
 };
+
+}

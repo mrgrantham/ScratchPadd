@@ -2,7 +2,7 @@
 #include <BaseWorker.hpp>
 #include <spdlog/spdlog.h>
 
-class StoryPadd : public BaseWorker {
+class StoryPadd : public ScratchPadd::BaseWorker {
   public:
   virtual void prepare() {
     spdlog::info("Preparing: {}",__CLASS_NAME__);

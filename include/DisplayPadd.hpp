@@ -3,7 +3,7 @@
 #include <spdlog/spdlog.h>
 
 template <typename T>
-class DisplayPadd : public BaseWorker {
+class DisplayPadd : public ScratchPadd::BaseWorker {
 public:
   virtual void prepare() override {
     spdlog::info("Preparing: {}", __CLASS_NAME__ );
