@@ -11,6 +11,7 @@ public:
   }
   DisplayPadd() : Base() {
     spdlog::info("Constructing: {}",__CLASS_NAME__ );
+    paddName_ = __CLASS_NAME__;
   }
   virtual ~DisplayPadd() {
     spdlog::info("Destroying: {}", __CLASS_NAME__);
