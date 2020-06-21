@@ -24,6 +24,7 @@ class BaseWorker {
   bool on_{true};
   std::string workerName_;
   std::thread workerThread_;
+  int repeating_interval_{0};
   public:
   BaseWorker() {
     workerName_ = __CLASS_NAME__;
@@ -43,6 +44,7 @@ class BaseWorker {
   virtual void cleanup(){}
   virtual void starting(){}
   virtual void finishing(){}
+  virtual void repeat(){}
 
   void run() {
     starting();
