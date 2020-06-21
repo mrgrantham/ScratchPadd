@@ -27,7 +27,7 @@ namespace ScratchPadd {
 
     void stopAndPrint() {
       stop();
-      printCurrentDuration();
+      printDuration();
     }
 
     double getDurationInSeconds() {
@@ -35,11 +35,24 @@ namespace ScratchPadd {
     }
 
     void printCurrentDuration() {
-      spdlog::info("Timer [{}] ended. Duration = {}",timerName_,getDurationString());
+      spdlog::info("Timer [{}] Current Duration = {}",timerName_,getCurrentDurationString());
     }
-    
+
+    void printDuration() {
+        spdlog::info("Timer [{}] Duration = {}",timerName_,getDurationString());
+    }
+
     std::string getDurationString() {
-      auto timerDuration = endTime_ - startTime_;
+      return getDurationString(endTime_,startTime_);
+    }
+
+    std::string getCurrentDurationString() {
+      return getDurationString(std::chrono::high_resolution_clock::now(),startTime_);
+    }
+
+    template <typename Duration>
+    std::string getDurationString(Duration endTime, Duration startTime) {
+      auto timerDuration = endTime - startTime;
       auto timedDays = duration_cast<std::chrono::days>(timerDuration);
       timerDuration -= timedDays;
       auto timedHours = duration_cast<std::chrono::hours>(timerDuration);
