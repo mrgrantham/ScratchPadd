@@ -53,22 +53,18 @@ namespace ScratchPadd {
       endTime_ = newIntervalEndTime;
     }
 
-    double markAndGetIntervalInSeconds() {
-      auto newIntervalEndTime = std::chrono::high_resolution_clock::now();
-      auto interval = newIntervalEndTime - endTime_;
-      intervals_.push_back(interval);
+    double markAndGetInterval() {
+      markInterval();
+      auto &interval = intervals_.back();
       double lastInterval = std::chrono::duration<double>(interval).count();
-      endTime_ = newIntervalEndTime;
       return lastInterval;
     }
     
 
     void markAndPrintInterval() {
-      auto newIntervalEndTime = std::chrono::high_resolution_clock::now();
-      auto interval = newIntervalEndTime - endTime_;
-      intervals_.push_back(interval);
+      markInterval();
+      auto &interval = intervals_.back();
       spdlog::info("Timer [{}] Interval {}",timerName_, formatIntervalToString(interval));
-      endTime_ = newIntervalEndTime;
     }
 
     void printAverageInterval() {
@@ -76,10 +72,22 @@ namespace ScratchPadd {
       for (auto &interval: intervals_) {
         interval_sum += interval;
       }
-      auto interval_avg = interval_sum / intervals_.size();
+      auto interval_avg = getAverageInterval();
       spdlog::info("Timer [{}] Size {} Interval Avg {}",timerName_, intervals_.size(), formatIntervalToString(interval_avg));
     }
 
+    std::chrono::duration<double> getAverageInterval() {
+      std::chrono::duration<double> interval_sum;
+      for (auto &interval: intervals_) {
+        interval_sum += interval;
+      }
+      return interval_sum / (double)intervals_.size();
+    }
+
+    auto getAverageIntervalString() {
+      return formatIntervalToString(getAverageInterval());
+    }
+ 
     void printCurrentDuration() {
       spdlog::info("Timer [{}] Current Duration = {}",timerName_,getCurrentDurationString());
     }
