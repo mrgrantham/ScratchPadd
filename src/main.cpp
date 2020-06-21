@@ -27,11 +27,12 @@ int main(int argc, char **argv) {
   ScratchPadd::Timer testTimer("TEST TIMER");
   testTimer.start();
   testRepeatTimer.startRepeatingEvent([&]{
-    testTimer.printCurrentDuration();
-  },16);
+    testTimer.markInterval();
+  },15);
   std::this_thread::sleep_for(std::chrono::seconds(1));
   testRepeatTimer.stop();
-  testTimer.stopAndPrint();
+  testTimer.printAverageInterval();
+  testTimer.markTimeAndPrint();
   std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
