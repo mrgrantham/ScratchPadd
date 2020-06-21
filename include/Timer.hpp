@@ -19,6 +19,10 @@ namespace ScratchPadd {
       
     }
 
+    void setTimerName(const std::string &name) {
+      timerName_ = name;
+    }
+
     void start() {
       startTime_ = std::chrono::high_resolution_clock::now();
       endTime_ = startTime_; // This is so getting intervals will work are well
