@@ -13,11 +13,11 @@ volatile sig_atomic_t flag = 0;
 void signal_handler(int sig);
 
 
+ScratchPadd::System<SCRATCHPADD_GL4> SPSystem;
 
 int main(int argc, char **argv) {
   SCOPED_METHOD_TIMER();
   signal(SIGINT, signal_handler); 
-  ScratchPadd::System<SCRATCHPADD_GL4> SPSystem;
   spdlog::info("Welcome to SCRATCHPADD!");
   SPSystem.instantiate();
   SPSystem.start();
@@ -28,5 +28,5 @@ int main(int argc, char **argv) {
 void signal_handler(int sig){ // can be called asynchronously
   spdlog::info("shutting down");
   flag = 0; // set flag
-  // SPSystem.stop();
+  SPSystem.stop();
 }
