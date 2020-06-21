@@ -21,19 +21,8 @@ int main(int argc, char **argv) {
   spdlog::info("Welcome to SCRATCHPADD!");
   SPSystem.instantiate();
   SPSystem.start();
+  std::this_thread::sleep_for(std::chrono::seconds(5));
   SPSystem.stop();
-
-  ScratchPadd::EventTimer testRepeatTimer;
-  ScratchPadd::Timer testTimer("TEST TIMER");
-  testTimer.start();
-  testRepeatTimer.startRepeatingEvent([&]{
-    testTimer.markInterval();
-  },15);
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-  testRepeatTimer.stop();
-  testTimer.printAverageInterval();
-  testTimer.markTimeAndPrint();
-  std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 void signal_handler(int sig){ // can be called asynchronously
