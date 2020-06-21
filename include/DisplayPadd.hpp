@@ -1,15 +1,15 @@
 #pragma once
-#include <BaseWorker.hpp>
+#include <Base.hpp>
 #include <spdlog/spdlog.h>
 
 template <typename T>
-class DisplayPadd : public ScratchPadd::BaseWorker {
+class DisplayPadd : public ScratchPadd::Base {
 public:
   virtual void prepare() override {
     spdlog::info("Preparing: {}", __CLASS_NAME__ );
     workerName_ = __CLASS_NAME__;
   }
-  DisplayPadd() : BaseWorker() {
+  DisplayPadd() : Base() {
     spdlog::info("Constructing: {}",__CLASS_NAME__ );
   }
   virtual ~DisplayPadd() {
