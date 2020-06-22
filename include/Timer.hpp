@@ -106,8 +106,8 @@ namespace ScratchPadd {
 
     template <typename Interval>
     std::string formatIntervalToString(Interval interval) {
-      auto timedDays = duration_cast<std::chrono::days>(interval);
-      interval -= timedDays;
+      // auto timedDays = duration_cast<std::chrono::days>(interval);
+      // interval -= timedDays;
       auto timedHours = duration_cast<std::chrono::hours>(interval);
       interval -= timedHours;
       auto timedMinutes = duration_cast<std::chrono::minutes>(interval);
@@ -115,7 +115,9 @@ namespace ScratchPadd {
       auto timedSeconds = duration_cast<std::chrono::seconds>(interval);
       interval -= timedSeconds;
       auto timedMilliseconds = duration_cast<std::chrono::milliseconds>(interval);
-      return fmt::format("{}h {}m {}s {}ms",timedHours.count(),timedMinutes.count(),timedSeconds.count(),timedMilliseconds.count());
+      // return fmt::format("{}h {}m {}s {}ms",timedHours.count(),timedMinutes.count(),timedSeconds.count(),timedMilliseconds.count());
+      return fmt::format("{}m {}s {}ms",timedMinutes.count(),timedSeconds.count(),timedMilliseconds.count());
+
     }
     
     template <typename Duration>
