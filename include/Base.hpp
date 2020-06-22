@@ -7,6 +7,10 @@
 #include <EventTimer.hpp>
 #include <boost/lockfree/queue.hpp>
 
+#ifdef _WIN32
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 inline std::string className(const std::string& classMethod)
 {
     size_t scopeResolutionOpIndex = classMethod.find("::");
