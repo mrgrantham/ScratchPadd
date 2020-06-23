@@ -49,7 +49,7 @@ class Base {
     std::cout <<  "Base() Destroying: " << paddName_ << std::endl;
   }
   void start() {
-    spdlog::info("Starting: {}", paddName_ );
+    spdlog::info("Start: {}", paddName_ );
     workerThread_ = std::thread(&Base::run,this);
     startRepeater();
   }
