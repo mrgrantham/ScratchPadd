@@ -2,10 +2,11 @@
 #include <Base.hpp>
 #include <spdlog/spdlog.h>
 #include <Timer.hpp>
-template <typename T>
+template <typename Graphics>
 class DisplayPadd : public ScratchPadd::Base {
 private:
   ScratchPadd::Timer performanceTimer_;
+  Graphics graphics_;
 public:
   virtual void prepare() override {
     spdlog::info("Preparing: {}", __CLASS_NAME__ );
@@ -21,10 +22,14 @@ public:
     // TODO make this sleep/wake from semaphore
     work_thread_sleep_interval_ = 0;
   }
-
+  virtual void starting() override {
+    spdlog::info("Starting Window Setup");
+    graphics_.setupWindow();
+  }
   virtual void finishing() override {
     spdlog::info("[{}] Avg Repeating Interval: {}",paddName_,performanceTimer_.getAverageIntervalString());
     performanceTimer_.markTimeAndPrint();
+    graphics_.tearDown();
   }
 
   virtual ~DisplayPadd() {
@@ -33,7 +38,14 @@ public:
   }
 
   virtual void repeat() override {
-    spdlog::info("DisplayPadd repeating at {:.3f}s interval",performanceTimer_.markAndGetInterval());
+    spdlog::info("DisplayPadd drawing at {:.3f}s interval",performanceTimer_.markAndGetInterval());
+    if (!graphics_.draw()) {
+      spdlog::info("Stop drawing");
+    }
+  }
+
+  virtual bool runOnMainThread() override {
+    return true;
   }
 
 };
