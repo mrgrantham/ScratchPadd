@@ -50,9 +50,12 @@ class Base {
   }
   void start() {
     spdlog::info("Start: {}", paddName_ );
-    workerThread_ = std::thread(&Base::run,this);
+    if(!runOnMainThread()) {
+      workerThread_ = std::thread(&Base::run,this);
+    }
     startRepeater();
   }
+  virtual bool runOnMainThread() {return false;}
   virtual void config(){}
   virtual void prepare(){}
   virtual void cleanup(){}
@@ -62,9 +65,39 @@ class Base {
     spdlog::info("Base::repeat() called. Padd set a repeat interval of {} with no method override",repeating_interval_);
   }
 
+  void runIfMainThread() {
+    if (runOnMainThread()) {
+      run_once();
+    }
+  }
+
+  void startingIfMainThread() {
+    if (runOnMainThread()) {
+      starting();
+    }
+  }
+
+  void finishingIfMainThread() {
+    if (runOnMainThread()) {
+      finishing();
+    }
+  }
+
   void run() {
     starting();
     while (on_) {
+      loop();
+    }
+    finishing();
+  }
+
+  void run_once() {
+    if (on_) {
+      loop();
+    }
+  }
+
+  void loop() {
       std::function<void()> *work = nullptr;
       while(work_queue_.pop(work)) {
         if (!work) spdlog::error("work is null");
@@ -73,8 +106,6 @@ class Base {
       }
       // spdlog::warn("sleeping work_queue_ {} for {}ms",paddName_, work_thread_sleep_interval_);
       std::this_thread::sleep_for(std::chrono::milliseconds(work_thread_sleep_interval_));
-    }
-    finishing();
   }
 
   void setRepeatInterval( int interval) {
