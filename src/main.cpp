@@ -4,7 +4,7 @@
 #include <Workers.hpp>
 #include <spdlog/spdlog.h>
 #include <signal.h> //  our new library 
-#include <ScratchPaddSystem.hpp>
+#include <ScratchPadd.hpp>
 #include <Timer.hpp>
 #include <EventTimer.hpp>
 #include <chrono>
@@ -12,25 +12,25 @@
 volatile sig_atomic_t flag = 0;
 void signal_handler(int sig);
 
-
-typedef ScratchPadd::System<SCRATCHPADD_GL4> SPSystem;
+ScratchPadd::System *spsystem = ScratchPadd::SystemBuilder<SCRATCHPADD_GL4>();
 
 int main(int argc, char **argv) {
   SCOPED_METHOD_TIMER();
   signal(SIGINT, signal_handler); 
   spdlog::info("Welcome to SCRATCHPADD!");
-  SPSystem::instantiate();
+  spsystem->instantiate();
   std::thread stop_delay_thread([]{
     std::cout << "Starting 10 second countdown" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(10));
     std::cout << "countdown over. Stopping" << std::endl;
-    SPSystem::stop();
+    spsystem->stop();
   });
-  SPSystem::start();
+  spsystem->start();
+  stop_delay_thread.join();
 }
 
 void signal_handler(int sig){ // can be called asynchronously
   spdlog::info("shutting down");
   flag = 0; // set flag
-  SPSystem::stop();
+  spsystem->stop();
 }

@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <EventTimer.hpp>
 #include <boost/lockfree/queue.hpp>
+#include <ScratchPaddSystem.hpp>
 
 #ifdef _WIN32
 #define __PRETTY_FUNCTION__ __FUNCSIG__
@@ -25,6 +26,9 @@ inline std::string className(const std::string& classMethod)
 
 #define __CLASS_NAME__ className(__PRETTY_FUNCTION__)
 
+template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template<class... Ts> overload(Ts...) -> overload<Ts...>; // line not needed in C++20...
+
 namespace ScratchPadd {
 
 class Base {
@@ -35,10 +39,11 @@ class Base {
   int repeating_interval_{0};
   int work_thread_sleep_interval_{1000};
   EventTimer repeatingTimer_;
+  System* system_;
   boost::lockfree::queue<std::function<void()>*> work_queue_{100};
 
   public:
-  Base() {
+  Base(System *system) : system_(system) {
     paddName_ = __CLASS_NAME__;
   }
   virtual ~Base() {
@@ -48,12 +53,18 @@ class Base {
     repeatingTimer_.stop();
     std::cout <<  "Base() Destroying: " << paddName_ << std::endl;
   }
+  bool isRunning() {
+    return on_;
+  }
   void start() {
     spdlog::info("Start: {}", paddName_ );
     if(!runOnMainThread()) {
       workerThread_ = std::thread(&Base::run,this);
     }
     startRepeater();
+  }
+  std::string getName() {
+    return paddName_;
   }
   virtual bool runOnMainThread() {return false;}
   virtual void config(){}
@@ -116,32 +127,21 @@ class Base {
     if (repeating_interval_) {
       spdlog::info("repeat() interval set to {}",repeating_interval_);
       repeatingTimer_.startRepeatingEvent([=]{
-        std::function<void()> work = std::function<void()>([=]{
+        std::function<void()> *work = new std::function<void()>([=]{
           this->repeat();
         });
-        send(work);
+        work_queue_.push(work);
       },repeating_interval_);
     } else {
       spdlog::info("No repeat() interval set");
     }
   }
 
-  template <typename Sendable>
-  void send(Sendable sendable) {
-    std::function<void()> *function = new std::function<void()>([=]{
-      recieve(sendable);
-    });
-    work_queue_.push(function);
+  void push(std::function<void()> *work) {
+    work_queue_.push(work);
   }
 
-  void recieve(const std::function<void()> &work) {
-    work();
-  }
-
-
-  void recieve(void) {
-    spdlog::error("Void Receive Called");
-  }
+  virtual void receive(Message message)=0;
 
   void stop() {
     spdlog::info("Stopping: {}", paddName_ );
@@ -149,6 +149,13 @@ class Base {
     if (workerThread_.joinable()) {
       workerThread_.join();
     }
+  }
+
+  void send(Message &message) {
+    system_->send(this, message);
+  }
+  void sendIncludeSender(Message &message) {
+    system_->sendIncludeSender(message);
   }
 };
 

@@ -12,14 +12,24 @@ static void clearOpenGLErrors();
 static void checkOpenGLErrors();
 static unsigned int compileShader(unsigned int type, std::string &source);
 static int generateShaders(std::string &vertexShader, std::string &fragmentShader);
-class GL2 {
- public:
-  void setupWindow() {}
 
-  void draw() {}
+
+class Graphics {
+  public:
+  virtual void setupWindow()=0;
+  virtual bool draw()=0;
+  virtual void tearDown()=0;
+  virtual ~Graphics(){};
 };
 
-class GL4 {
+class GL2 : public Graphics {
+ public:
+  void setupWindow() override {}
+  bool draw() override {return true;}
+  void tearDown() override {}
+};
+
+class GL4 : public Graphics {
   unsigned int shaders = 0;
   std::string vertexShader =
       "#version 330 core\n"
@@ -43,7 +53,7 @@ class GL4 {
 
  public:
   GLFWwindow *window;
-  void setupWindow() {
+  void setupWindow() override {
     if (!glfwInit()) {
       spdlog::error("Could not init GLFW!");
       exit(-1);
@@ -92,7 +102,7 @@ class GL4 {
     glUseProgram(shaders);
   }
 
-  bool draw() {
+  bool draw() override {
     if (!glfwWindowShouldClose(window)) {
       checkOpenGLErrors();
       glClear(GL_COLOR_BUFFER_BIT);
@@ -104,7 +114,7 @@ class GL4 {
     return false;
   }
 
-  void tearDown() {
+  void tearDown() override {
     glDeleteProgram(shaders);
     glfwTerminate();
   }
