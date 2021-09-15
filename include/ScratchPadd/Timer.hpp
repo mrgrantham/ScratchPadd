@@ -7,6 +7,7 @@
 
 namespace ScratchPadd {
 
+  // Can be used to determine how much time was spent in a particular method
   #define SCOPED_METHOD_TIMER() ScratchPadd::ScopedTimer scopedTimer(__PRETTY_FUNCTION__)
 
   class Timer {
