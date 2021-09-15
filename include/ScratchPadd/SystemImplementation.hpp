@@ -51,7 +51,7 @@ namespace ScratchPadd {
     }
     void waitForStop() {
       std::unique_lock<std::mutex> lk(scratchPaddSystemMutex_);
-      std::cout << "Waiting... \n";
+      spdlog::info("Waiting For Stop...");
       scratchPaddSystemConditionVariable_.wait(lk, [this]{return stopped_;});
     }
 
