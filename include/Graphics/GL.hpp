@@ -16,15 +16,6 @@ static void checkOpenGLErrors();
 static unsigned int compileShader(unsigned int type, std::string &source);
 static int generateShaders(std::string &vertexShader, std::string &fragmentShader);
 
-
-class Graphics {
-  public:
-  virtual void setupWindow()=0;
-  virtual bool draw()=0;
-  virtual void tearDown()=0;
-  virtual ~Graphics(){};
-};
-
 class GL2 : public Graphics {
  public:
   void setupWindow() override {}
@@ -79,7 +70,7 @@ class GL4 : public Graphics {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(1366, 768, "ScratchPaad", nullptr, nullptr);
+    window = glfwCreateWindow(1366, 768, "ScratchPadd", nullptr, nullptr);
     if (!window) {
       spdlog::error("No window created!");
       glfwTerminate();
@@ -132,7 +123,6 @@ class GL4 : public Graphics {
 
   bool draw() override {
     if (!glfwWindowShouldClose(window)) {
-      spdlog::info("window on display");
       checkOpenGLErrors();
       glfwPollEvents();
 
@@ -265,3 +255,7 @@ static int generateShaders(std::string &vertexShader,
   glDeleteShader(f_shader);
   return program;
 }
+
+ static std::unique_ptr<Graphics> GraphicsBuilder() {
+    return std::make_unique<GL4>();
+  }

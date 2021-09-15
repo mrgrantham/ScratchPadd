@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 #include <ScratchPadd/Timer.hpp>
 #include <Message.hpp>
+#include <Graphics/Graphics.hpp>
 class DisplayPadd : public ScratchPadd::Base {
 private:
   ScratchPadd::Timer performanceTimer_;
@@ -17,7 +18,7 @@ public:
   DisplayPadd(ScratchPadd::System *system) : Base(system) {
     spdlog::info("Constructing: {}",__CLASS_NAME__ );
     paddName_ = __CLASS_NAME__;
-    graphics_ = std::make_unique<GL4>();
+    graphics_ = GraphicsBuilder();
     // We dont want the work loop to sleep
     // TODO make this sleep/wake from semaphore
     work_thread_sleep_interval_ = 0;
@@ -47,6 +48,7 @@ public:
 
     if (!graphics_->draw()) {
       spdlog::info("Stop drawing");
+      system_->stop();
     }
   }
 
