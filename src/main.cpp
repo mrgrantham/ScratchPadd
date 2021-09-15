@@ -17,15 +17,15 @@ int main(int argc, char **argv) {
   signal(SIGINT, signal_handler); 
   spdlog::info("Welcome to SCRATCHPADD!");
   spsystem->instantiate();
-  std::thread stop_delay_thread([]{
-    int delay = 20;
-    spdlog::info("Starting {} second countdown",delay);
-    std::this_thread::sleep_for(std::chrono::seconds(delay));
-    spdlog::info("countdown over. Stopping");
-    spsystem->stop();
-  });
+  // std::thread stop_delay_thread([]{
+  //   int delay = 20;
+  //   spdlog::info("Starting {} second countdown",delay);
+  //   std::this_thread::sleep_for(std::chrono::seconds(delay));
+  //   spdlog::info("countdown over. Stopping");
+  //   spsystem->stop();
+  // });
   spsystem->start();
-  stop_delay_thread.join();
+  // stop_delay_thread.join();
 }
 
 void signal_handler(int sig){ // can be called asynchronously
