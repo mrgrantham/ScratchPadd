@@ -18,9 +18,10 @@ int main(int argc, char **argv) {
   spdlog::info("Welcome to SCRATCHPADD!");
   spsystem->instantiate();
   std::thread stop_delay_thread([]{
-    std::cout << "Starting 10 second countdown" << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-    std::cout << "countdown over. Stopping" << std::endl;
+    int delay = 20;
+    spdlog::info("Starting {} second countdown",delay);
+    std::this_thread::sleep_for(std::chrono::seconds(delay));
+    spdlog::info("countdown over. Stopping");
     spsystem->stop();
   });
   spsystem->start();
