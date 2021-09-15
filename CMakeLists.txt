@@ -16,6 +16,8 @@ if (APPLE)
   target_compile_definitions(${PROJECT_NAME} PUBLIC GL_SILENCE_DEPRECATION)
 endif ()
 
+target_compile_options(${PROJECT_NAME} PUBLIC -Werror=inconsistent-missing-override)
+
 target_include_directories(${PROJECT_NAME} 
         PUBLIC include)
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
