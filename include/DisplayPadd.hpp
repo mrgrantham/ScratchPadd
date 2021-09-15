@@ -10,7 +10,7 @@ private:
 public:
   virtual void prepare() override {
     spdlog::info("Preparing: {}", __CLASS_NAME__ );
-    setRepeatInterval(100);
+    setRepeatInterval(33);
     performanceTimer_.setTimerName(paddName_);
     performanceTimer_.start();
   }
