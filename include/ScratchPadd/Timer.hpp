@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 #include <chrono>
@@ -55,6 +54,10 @@ namespace ScratchPadd {
 
     double markAndGetInterval() {
       markInterval();
+      return getLastInterval();
+    }
+
+    double getLastInterval() {
       auto &interval = intervals_.back();
       double lastInterval = std::chrono::duration<double>(interval).count();
       return lastInterval;
@@ -68,20 +71,22 @@ namespace ScratchPadd {
     }
 
     void printAverageInterval() {
-      std::chrono::duration<double> interval_sum;
-      for (auto &interval: intervals_) {
-        interval_sum += interval;
-      }
       auto interval_avg = getAverageInterval();
       spdlog::info("Timer [{}] Size {} Interval Avg {}",timerName_, intervals_.size(), formatIntervalToString(interval_avg));
     }
 
-    std::chrono::duration<double> getAverageInterval() {
+    std::chrono::duration<double> getAverageInterval(int samples=0) {
+      int intervalSampleCount = (samples < intervals_.size() || samples != 0 ) ? samples : intervals_.size();
+      std::vector<std::chrono::duration<double>> intervalSamples(intervals_.end() - intervalSampleCount, intervals_.end());
       std::chrono::duration<double> interval_sum;
-      for (auto &interval: intervals_) {
+      for (auto &interval: intervalSamples) {
         interval_sum += interval;
       }
-      return interval_sum / (double)intervals_.size();
+      return interval_sum / (double)intervalSamples.size();
+    }
+
+    double getAverageIntervalInSeconds(int samples=0) {
+      return getAverageInterval(samples).count();
     }
 
     auto getAverageIntervalString() {

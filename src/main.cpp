@@ -1,17 +1,15 @@
 #include <iostream> 
 #include <boost/program_options.hpp>
-#include <PaddConfigs.hpp>
 #include <Workers.hpp>
 #include <spdlog/spdlog.h>
 #include <signal.h> //  our new library 
-#include <ScratchPadd.hpp>
-#include <Timer.hpp>
-#include <EventTimer.hpp>
+#include <ScratchPadd/ScratchPadd.hpp>
 #include <chrono>
 
 volatile sig_atomic_t flag = 0;
 void signal_handler(int sig);
 
+#define SCRATCHPADD_GL4 DisplayPadd,StoryPadd,AudioPadd
 ScratchPadd::System *spsystem = ScratchPadd::SystemBuilder<SCRATCHPADD_GL4>();
 
 int main(int argc, char **argv) {

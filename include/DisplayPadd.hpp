@@ -1,7 +1,7 @@
 #pragma once
-#include <Base.hpp>
+#include <ScratchPadd/Base.hpp>
 #include <spdlog/spdlog.h>
-#include <Timer.hpp>
+#include <ScratchPadd/Timer.hpp>
 #include <Message.hpp>
 class DisplayPadd : public ScratchPadd::Base {
 private:
@@ -38,7 +38,13 @@ public:
   }
 
   virtual void repeat() override {
-    spdlog::info("DisplayPadd drawing at {:.3f}s interval",performanceTimer_.markAndGetInterval());
+    performanceTimer_.markInterval();
+    static int count = 0;
+    if (count % 10 == 0) {
+      spdlog::info("DisplayPadd drawing at {:.3f}s interval",performanceTimer_.getAverageIntervalInSeconds(5));
+    }
+    count++;
+
     if (!graphics_->draw()) {
       spdlog::info("Stop drawing");
     }
@@ -51,9 +57,9 @@ public:
   virtual void receive(ScratchPadd::Message message) override {
     ScratchPadd::MessageVariant &messageVariant = *message.get();
     std::visit(overload{
-        [](ScratchPadd::Message_Type::Triangle& message)       { std::cout << "Triangle: " << message <<"\n"; },
-        [](ScratchPadd::Message_Type::Point& message)   { std::cout << "Point: " << message << "\n"; },
-        [](ScratchPadd::Message_Type::Text& message)       { std::cout << "Text: " << message << "\n"; }
+        [&](ScratchPadd::Message_Type::Triangle& message)       { std::cout << paddName_ << "Triangle: " << message <<"\n"; },
+        [&](ScratchPadd::Message_Type::Point& message)   { std::cout << paddName_ <<"Point: " << message << "\n"; },
+        [&](ScratchPadd::Message_Type::Text& message)       { std::cout << paddName_ << "Text: " << message << "\n"; }
     }, messageVariant);
   }
 

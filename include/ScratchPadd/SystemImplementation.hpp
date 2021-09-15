@@ -1,7 +1,7 @@
 #pragma once
 #include <tuple>
 #include <spdlog/spdlog.h>
-#include <ScratchPaddSystem.hpp>
+#include <ScratchPadd/System.hpp>
 
 namespace ScratchPadd {
 

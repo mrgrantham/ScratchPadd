@@ -1,5 +1,5 @@
 #pragma once
-#include <Base.hpp>
+#include <ScratchPadd/Base.hpp>
 #include <spdlog/spdlog.h>
 
 class StoryPadd : public ScratchPadd::Base {
@@ -21,12 +21,17 @@ class StoryPadd : public ScratchPadd::Base {
     spdlog::info("Destroying: {}", __CLASS_NAME__ );
   }
 
+  virtual void starting() override {
+    ScratchPadd::Message_Type::Triangle triangle;
+    send(ScratchPadd::Make_Msg(ScratchPadd::Message_Type::Triangle()));
+  }
+
   virtual void receive(ScratchPadd::Message message) override {
     ScratchPadd::MessageVariant &messageVariant = *message.get();
     std::visit(overload{
-        [](ScratchPadd::Message_Type::Triangle& message)       { std::cout << "Triangle: " << message <<"\n"; },
-        [](ScratchPadd::Message_Type::Point& message)   { std::cout << "Point: " << message << "\n"; },
-        [](ScratchPadd::Message_Type::Text& message)       { std::cout << "Text: " << message << "\n"; }
+        [&](ScratchPadd::Message_Type::Triangle& message)       { std::cout << paddName_ << "Triangle: " << message <<"\n"; },
+        [&](ScratchPadd::Message_Type::Point& message)   { std::cout << paddName_ << "Point: " << message << "\n"; },
+        [&](ScratchPadd::Message_Type::Text& message)       { std::cout << paddName_ << "Text: " << message << "\n"; }
     }, messageVariant);
   }
 };

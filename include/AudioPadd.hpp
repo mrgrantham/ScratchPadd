@@ -1,5 +1,5 @@
 #pragma once
-#include <Base.hpp>
+#include <ScratchPadd/Base.hpp>
 #include <spdlog/spdlog.h>
 
 class AudioPadd : public ScratchPadd::Base {
@@ -19,9 +19,9 @@ class AudioPadd : public ScratchPadd::Base {
   virtual void receive(ScratchPadd::Message message) override {
     ScratchPadd::MessageVariant &messageVariant = *message.get();
     std::visit(overload{
-        [](ScratchPadd::Message_Type::Triangle& message)       { std::cout << "Triangle: " << message <<"\n"; },
-        [](ScratchPadd::Message_Type::Point& message)   { std::cout << "Point: " << message << "\n"; },
-        [](ScratchPadd::Message_Type::Text& message)       { std::cout << "Text: " << message << "\n"; }
+        [&](ScratchPadd::Message_Type::Triangle& message)       { std::cout << paddName_ << "Triangle: " << message <<"\n"; },
+        [&](ScratchPadd::Message_Type::Point& message)   { std::cout << paddName_ << "Point: " << message << "\n"; },
+        [&](ScratchPadd::Message_Type::Text& message)       { std::cout << paddName_ << "Text: " << message << "\n"; }
     }, messageVariant);
   }
 

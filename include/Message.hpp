@@ -8,6 +8,22 @@
 
 namespace ScratchPadd {
   namespace Message_Type {
+
+    namespace Transform {
+      struct Translate {
+
+      };
+      struct Scale {
+
+      };
+      struct Rotate {
+
+      };
+    }
+
+    struct Color {
+
+    };
     struct Point {
       double x{0};
       double y{0};

@@ -4,9 +4,9 @@
 #include <thread>
 #include <memory>
 #include <spdlog/spdlog.h>
-#include <EventTimer.hpp>
+#include <ScratchPadd/EventTimer.hpp>
 #include <boost/lockfree/queue.hpp>
-#include <ScratchPaddSystem.hpp>
+#include <ScratchPadd/System.hpp>
 
 #ifdef _WIN32
 #define __PRETTY_FUNCTION__ __FUNCSIG__
@@ -151,7 +151,7 @@ class Base {
     }
   }
 
-  void send(Message &message) {
+  void send(Message message) {
     system_->send(this, message);
   }
   void sendIncludeSender(Message &message) {
