@@ -8,7 +8,9 @@ pipeline {
             steps {
               sh "echo $PATH"
               dir('build') {
-                sh "cmake .. ; cmake --build . -- -j3"
+                sh "conan install .."
+                sh "cmake .."
+                sh "cmake --build . -- -j3"
               }
                 echo 'Building..'
             }
