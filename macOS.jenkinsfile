@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+              cmakeBuild
+                    generator: 'XCode',
+                    buildDir: 'build',
+                    sourceDir: 'source',
+                    installation: 'InSearchPath',
+                    steps: [
+                        [args: 'all install', envVars: 'DESTDIR=${WORKSPACE}/artifacts']
+                    ]
+                echo 'Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}
