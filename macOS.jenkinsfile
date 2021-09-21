@@ -4,12 +4,13 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-              cmakeBuild
+              cmakeBuild(
                     buildDir: 'build',
                     installation: 'InSearchPath',
                     steps: [
                         [args: 'all install', envVars: 'DESTDIR=${WORKSPACE}/artifacts']
                     ]
+              )
                 echo 'Building..'
             }
         }
