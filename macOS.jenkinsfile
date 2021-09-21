@@ -7,14 +7,9 @@ pipeline {
         stage('Build') {
             steps {
               sh "echo $PATH"
-              sh "cmake .."
-              cmakeBuild(
-                    buildDir: 'build',
-                    installation: 'InSearchPath',
-                    steps: [
-                        [args: 'all install', envVars: 'DESTDIR=${WORKSPACE}/artifacts']
-                    ]
-              )
+              dir('build') {
+                sh "cmake .. ; cmake --build . -- -j3"
+              }
                 echo 'Building..'
             }
         }
