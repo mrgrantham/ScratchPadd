@@ -5,9 +5,7 @@ pipeline {
         stage('Build') {
             steps {
               cmakeBuild
-                    generator: 'XCode',
                     buildDir: 'build',
-                    sourceDir: 'source',
                     installation: 'InSearchPath',
                     steps: [
                         [args: 'all install', envVars: 'DESTDIR=${WORKSPACE}/artifacts']
