@@ -6,6 +6,8 @@ spdlog/1.6.1
 glew/2.1.0@bincrafters/stable
 fmt/6.2.1
 cairo/1.17.4
+catch2/2.13.6
+asio/1.18.2
 
 [generators]
 cmake
