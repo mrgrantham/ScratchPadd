@@ -1,62 +1,18 @@
-#include <GL/glew.h>  // include before GLFW
+#pragma once
+#include <GL/glew.h> 
 #include <GLFW/glfw3.h>
-#include <spdlog/spdlog.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-float positions[] = {
-     -0.5f, -0.5f, 
-      0.0f, 0.5f, 
-      0.5f, -0.5f
-};
-
-static void clearOpenGLErrors();
-static void checkOpenGLErrors();
-static unsigned int compileShader(unsigned int type, std::string &source);
-static int generateShaders(std::string &vertexShader, std::string &fragmentShader);
-
-class GL2 : public Graphics {
- public:
-  void setupWindow() override {}
-  bool draw() override {return true;}
-  void tearDown() override {}
-};
-
-static void glfw_error_callback(int error, const char* description)
-{
-    spdlog::error("Glfw Error {}: {}\n", error, description);
-}
-
-class GL4 : public Graphics {
-  unsigned int shaders = 0;
-  std::string vertexShader =
-      "#version 330 core\n"
-      "\n"
-      "layout(location = 0) in vec4 position;\n"
-      "\n"
-      "void main()\n"
-      "{\n"
-      "   gl_Position = position;\n"
-      "}\n";
-
-  std::string fragmentShader =
-      "#version 330 core\n"
-      "\n"
-      "layout(location = 0) out vec4 color;"
-      "\n"
-      "void main()\n"
-      "{\n"
-      "   color =  vec4(1.0,0.5,0.5,0.5);\n"
-      "}\n";
+class GL_Graphics : public Graphics {
 
     // Our state
     bool show_demo_window = true;
     bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    // const char* glsl_version = "#version 330 core";
     const char* glsl_version = "#version 330 core";
-
+    GL_Shader shader_;
+    GL_View view_;
  public:
   GLFWwindow *window;
   void setupWindow() override {
@@ -102,35 +58,20 @@ class GL4 : public Graphics {
     spdlog::info("GL RENDERER: {}", renderer);
     spdlog::info("GL VERSION: {}", version);
     spdlog::info("Status: Using GLEW {}\n", glewGetString(GLEW_VERSION));
-
-    // glEnable(GL_DEPTH_TEST);
-    GLuint buffer = 0;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-
-    shaders = generateShaders(vertexShader, fragmentShader);
-    glUseProgram(shaders);
+    view_.setup();
   }
 
   bool draw() override {
     if (!glfwWindowShouldClose(window)) {
-      checkOpenGLErrors();
+      // checkOpenGLErrors();
       glfwPollEvents();
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
+        view_.draw();
+        checkOpenGLErrors("After draw");
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
@@ -147,7 +88,9 @@ class GL4 : public Graphics {
             ImGui::Checkbox("Another Window", &show_another_window);
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+            ImGui::ColorEdit3("gl window color", (float*)&ScratchPadd::Color::Light_Blue); // Edit 3 floats representing a color
+            ImGui::ColorEdit3("app background color", (float*)&ScratchPadd::Color::App_Background); // Edit 3 floats representing a color
+            ImGui::ColorEdit3("gl shape color", (float*)&ScratchPadd::Color::Shape_Color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                 counter++;
@@ -173,10 +116,15 @@ class GL4 : public Graphics {
       int display_w, display_h;
       glfwGetFramebufferSize(window, &display_w, &display_h);
       glViewport(0, 0, display_w, display_h);
-      glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+      glClearColor(ScratchPadd::Color::App_Background.x * ScratchPadd::Color::App_Background.w, 
+                    ScratchPadd::Color::App_Background.y * ScratchPadd::Color::App_Background.w, 
+                    ScratchPadd::Color::App_Background.z * ScratchPadd::Color::App_Background.w, 
+                    ScratchPadd::Color::App_Background.w);
       glClear(GL_COLOR_BUFFER_BIT);
-      glDrawArrays(GL_TRIANGLES, 0, 3);
-      
+      checkOpenGLErrors("before glDrawArrays");
+      // glDrawArrays(GL_TRIANGLES, 0, 3);
+      checkOpenGLErrors("after glDrawArrays");
+
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
       glfwSwapBuffers(window);
       return true;
@@ -190,72 +138,13 @@ class GL4 : public Graphics {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glDeleteProgram(shaders);
+    view_.destroy();
+    shader_.destroy();
     glfwDestroyWindow(window);
     glfwTerminate();
   }
 };
 
-static void clearOpenGLErrors() {
-  while (glGetError() != GL_NO_ERROR) {
-  }
+static std::unique_ptr<Graphics> GraphicsBuilder() {
+  return std::make_unique<GL_Graphics>();
 }
-
-static void checkOpenGLErrors() {
-  while (GLenum error = glGetError()) {
-    spdlog::error("OPENGL ERROR: (0x{0:x})", error);
-  }
-}
-
-unsigned int compileShader(unsigned int type, std::string &source) {
-  unsigned int id = glCreateShader(type);
-  const char *source_c_str = source.c_str();
-  glShaderSource(id, 1, &source_c_str, nullptr);
-  glCompileShader(id);
-
-  int status;
-  glGetShaderiv(id, GL_COMPILE_STATUS, &status);
-  if (status == GL_FALSE) {
-    int status_length = 0;
-    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &status_length);
-    auto message = std::make_unique<char[]>(status_length);
-    glGetShaderInfoLog(id, status_length, &status_length, message.get());
-    spdlog::error("FAILED TO COMPILE {} SHADER WITH ERROR:\n{}",
-                  (type == GL_VERTEX_SHADER) ? "VERTEX" : "FRAGMENT",
-                  message.get());
-    glDeleteShader(id);
-    return 0;
-  }
-  return id;
-}
-
-static int generateShaders(std::string &vertexShader,
-                           std::string &fragmentShader) {
-  unsigned int program = glCreateProgram();
-  unsigned int v_shader = compileShader(GL_VERTEX_SHADER, vertexShader);
-  unsigned int f_shader = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
-  glAttachShader(program, v_shader);
-  glAttachShader(program, f_shader);
-  glLinkProgram(program);
-  GLint link_ok;
-  glGetProgramiv(program, GL_LINK_STATUS, &link_ok);
-  if (!link_ok) {
-    int status_length = 0;
-    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &status_length);
-    auto message = std::make_unique<char[]>(status_length);
-    glGetProgramInfoLog(program, status_length, &status_length, message.get());
-    spdlog::error("Error in glLinkProgram: {}", message.get());
-    return 0;
-  }
-  glValidateProgram(program);
-
-  // now that the shaders are linked into a program
-  // we can delete them
-  glDeleteShader(v_shader);
-  glDeleteShader(f_shader);
-  return program;
-}
-
- static std::unique_ptr<Graphics> GraphicsBuilder() {
-    return std::make_unique<GL4>();
-  }

@@ -3,15 +3,16 @@
 #include <spdlog/spdlog.h>
 #include <ScratchPadd/Timer.hpp>
 #include <Message.hpp>
-#include <Graphics/Graphics.hpp>
+#include <ScratchPadd/Graphics/Graphics.hpp>
 class DisplayPadd : public ScratchPadd::Base {
 private:
   ScratchPadd::Timer performanceTimer_;
   std::unique_ptr<Graphics> graphics_;
+  std::unique_ptr<Graphics::View> view_;
 public:
   virtual void prepare() override {
     spdlog::info("Preparing: {}", __CLASS_NAME__ );
-    setRepeatInterval(33);
+    setRepeatInterval(32);
     performanceTimer_.setTimerName(paddName_);
     performanceTimer_.start();
   }
@@ -19,6 +20,7 @@ public:
     spdlog::info("Constructing: {}",__CLASS_NAME__ );
     paddName_ = __CLASS_NAME__;
     graphics_ = GraphicsBuilder();
+    view_ = ViewBuilder();
     // We dont want the work loop to sleep
     // TODO make this sleep/wake from semaphore
     work_thread_sleep_interval_ = 0;
@@ -41,8 +43,9 @@ public:
   virtual void repeat() override {
     performanceTimer_.markInterval();
     static int count = 0;
-    if (count % 10 == 0) {
+    if (count % 30 == 0) {
       spdlog::info("DisplayPadd drawing at {:.3f}s interval",performanceTimer_.getAverageIntervalInSeconds(5));
+      spdlog::info("DisplayPadd drawing at {:.3f} fps",1.0/performanceTimer_.getAverageIntervalInSeconds(5));
     }
     count++;
 

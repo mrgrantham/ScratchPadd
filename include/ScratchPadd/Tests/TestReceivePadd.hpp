@@ -2,15 +2,13 @@
 #include <ScratchPadd/Base.hpp>
 #include <spdlog/spdlog.h>
 
-class StoryPadd : public ScratchPadd::Base {
-  ScratchPadd::Timer performanceTimer_;
+
+class TestReceivePadd : public ScratchPadd::Base {
   public:
   virtual void prepare() override {
     spdlog::info("Preparing: {}",__CLASS_NAME__);
     paddName_ = __CLASS_NAME__;
     setRepeatInterval(1000);
-    performanceTimer_.setTimerName(paddName_);
-    performanceTimer_.start();
   }
   StoryPadd(ScratchPadd::System *system)  : Base(system){
     spdlog::info("Constructing: {}", __CLASS_NAME__);
@@ -18,8 +16,6 @@ class StoryPadd : public ScratchPadd::Base {
 
   virtual void repeat() override {
     spdlog::info("Repeating: {}",__CLASS_NAME__);
-    performanceTimer_.markInterval();
-    spdlog::info("{} firing at {:.3f}s interval",paddName_, performanceTimer_.getAverageIntervalInSeconds(5));
   }
 
   virtual ~StoryPadd() {
