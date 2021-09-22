@@ -9,8 +9,13 @@
 volatile sig_atomic_t flag = 0;
 void signal_handler(int sig);
 
+#if !defined(SCRATCHPADD_TESTS)
 #define SCRATCHPADD_GL4 DisplayPadd,StoryPadd,AudioPadd
 ScratchPadd::System *spsystem = ScratchPadd::SystemBuilder<SCRATCHPADD_GL4>();
+#else
+#define SCRATCHPADD_TEST_PADDS DisplayPadd,StoryPadd,AudioPadd
+ScratchPadd::System *spsystem = ScratchPadd::SystemBuilder<SCRATCHPADD_TEST_PADDS>();
+#endif
 
 int main(int argc, char **argv) {
   SCOPED_METHOD_TIMER();
