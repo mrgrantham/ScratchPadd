@@ -37,7 +37,7 @@ class Base {
   std::string paddName_;
   std::thread workerThread_;
   int repeating_interval_{0};
-  int work_thread_sleep_interval_{1000};
+  int work_thread_sleep_interval_{500};
   EventTimer repeatingTimer_;
   System* system_;
   boost::lockfree::queue<std::function<void()>*> work_queue_{100};
