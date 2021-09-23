@@ -2,12 +2,40 @@
 
 #include <array>
 #include <iostream>
+#include <variant>
 
 // This is the namespace for all data structures passed between padds
-#define Message_Types ScratchPadd::Message_Type::Point, ScratchPadd::Message_Type::Triangle, ScratchPadd::Message_Type::Text
+#define Message_Types ScratchPadd::Message_Type::Point, ScratchPadd::Message_Type::Triangle, ScratchPadd::Message_Type::Text, ScratchPadd::Message_Type::Control
 
 namespace ScratchPadd {
+
+    namespace ControlType {
+      struct Double {
+        double value;
+        std::optional<std::pair<double,double>> enforcableRange;
+      };
+      struct Integer {
+        int32_t value;
+        std::optional<std::pair<int32_t,int32_t>> enforcableRange;
+      };
+
+      struct Boolean {
+        bool value;
+      };
+
+      struct String {
+        std::string value;
+        std::optional<std::vector<std::string>> enforcableRange;
+      };
+    }
   namespace Message_Type {
+
+    #define Control_Types ScratchPadd::ControlType::Double, ScratchPadd::ControlType::Integer, ScratchPadd::ControlType::Boolean, ScratchPadd::ControlType::String
+    using ControlVariant = std::variant<Control_Types>;
+    struct Control {
+      std::string sourceName;
+      std::unordered_map<std::string,ControlVariant> controlMap;
+    };
 
     namespace Transform {
       struct Translate {

@@ -36,7 +36,8 @@ class StoryPadd : public ScratchPadd::Base {
     std::visit(overload{
         [&](ScratchPadd::Message_Type::Triangle& message)       { std::cout << paddName_ << "Triangle: " << message <<"\n"; },
         [&](ScratchPadd::Message_Type::Point& message)   { std::cout << paddName_ << "Point: " << message << "\n"; },
-        [&](ScratchPadd::Message_Type::Text& message)       { std::cout << paddName_ << "Text: " << message << "\n"; }
+        [&](ScratchPadd::Message_Type::Text& message)       { std::cout << paddName_ << "Text: " << message << "\n"; },
+        [&](auto& message)       { std::cout << paddName_ << " auto\n"; }
     }, messageVariant);
   }
 };
