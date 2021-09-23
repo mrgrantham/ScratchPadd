@@ -9,7 +9,7 @@ ScratchPadd is an actor model implementation in C++ that allows threadsafe messa
 Data that need to be sent to different Padds are wrapped in a lambda and stored in a heap allocated std::function<void()> that is consumed and cleaned up by the receiving Padd.
 
 ### Supported Platforms ###
-While the project is written in a cross platform manner, it has not yet been tested or run on any platform aside from macOS 10.15
+While the project is written ultimately with cross platform support in mind, it has not yet been tested or run on any platform aside from macOS 10.15
 
 
 ## Setup ##
