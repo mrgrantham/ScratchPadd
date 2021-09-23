@@ -26,7 +26,7 @@ class GL_Graphics : public Graphics {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(1366, 768, "ScratchPadd", nullptr, nullptr);
+    window = glfwCreateWindow(1366, 768, PROJECT_NAME, nullptr, nullptr);
     if (!window) {
       spdlog::error("No window created!");
       glfwTerminate();
@@ -58,7 +58,7 @@ class GL_Graphics : public Graphics {
     spdlog::info("GL RENDERER: {}", renderer);
     spdlog::info("GL VERSION: {}", version);
     spdlog::info("Status: Using GLEW {}\n", glewGetString(GLEW_VERSION));
-    view_.setup();
+    view_.setup("GL Example");
   }
 
   bool draw() override {

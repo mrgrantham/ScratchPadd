@@ -6,11 +6,11 @@ class GL_View : public Graphics::View {
   std::unique_ptr<Graphics::VertexIndexBuffer> vertexIndexBuffer_;
   GL_Shader shader_;
   ImVec2 size_;
-
+  std::string name_{"Unnamed"};
   public:
   GL_View() : frameBuffer_(std::make_unique<GL_FrameBuffer>()),    vertexIndexBuffer_(std::make_unique<GL_VertexIndexBuffer>()){}
-  void setup() override {
-    ;
+  void setup(const std::string&& name) override {
+    name_ = name;
     frameBuffer_->create(800, 600);
     vertexIndexBuffer_->create(vertices, indices);
     // shader_.generate(vertexShader, fragmentShader);
@@ -35,7 +35,7 @@ class GL_View : public Graphics::View {
 
     frameBuffer_->unbind();
 
-    ImGui::Begin("Scene");
+    ImGui::Begin(name_.c_str());
 
     ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
     size_ = { viewportPanelSize.x, viewportPanelSize.y };

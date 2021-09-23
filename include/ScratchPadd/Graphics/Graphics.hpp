@@ -7,7 +7,7 @@ class Graphics {
     virtual void draw()=0;
     virtual void destroy()=0;
     virtual void reset()=0;
-    virtual void setup()=0;
+    virtual void setup(const std::string &&name)=0;
     virtual ~View() {}
   };
   class FrameBuffer {

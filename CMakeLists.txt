@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(scratchpadd)
+project(ScratchPadd)
 set(CMAKE_CXX_STANDARD 20)
 
 message("Language Version: C++${CMAKE_CXX_STANDARD}")
@@ -35,6 +35,9 @@ if (APPLE AND GRAPHICS_BACKEND STREQUAL "GL")
   message(STATUS "APPLE OPENGL BUILD: Silencing Deprecated OpenGL message. We don't care\n")
   target_compile_definitions(${PROJECT_NAME} PUBLIC GL_SILENCE_DEPRECATION)
 endif ()
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC PROJECT_NAME="${PROJECT_NAME}")
+
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Werror=inconsistent-missing-override
                                                 -Werror=delete-abstract-non-virtual-dtor)
