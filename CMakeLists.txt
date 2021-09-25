@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
+include(cmake/helpers.cmake)
 
 project(ScratchPadd)
 set(CMAKE_CXX_STANDARD 20)
@@ -18,10 +19,22 @@ file(GLOB IMGUI_BINDINGS
 
 file(GLOB SRC_FILES src/*.cpp)
 
+add_bundle_resources(RESOURCES "${CMAKE_SOURCE_DIR}/include/ScratchPadd/Graphics/GL/Shaders" "Resources")
+add_bundle_resources(RESOURCES "${CMAKE_SOURCE_DIR}/resources" "Resources")
 
-add_executable(${PROJECT_NAME} ${SRC_FILES}
-                          ${IMGUI_BINDINGS})
-                          
+add_executable(${PROJECT_NAME} 
+                        MACOSX_BUNDLE
+                        ${SRC_FILES}
+                        ${IMGUI_BINDINGS}
+                        ${RESOURCES})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        RESOURCE ${PROJECT_NAME}.icns
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "0.1.1"
+        MACOSX_BUNDLE_ICON_FILE ${PROJECT_NAME}.icns
+)
+
 if (NOT DEFINED GRAPHICS_BACKEND)
         target_compile_definitions(${PROJECT_NAME} PUBLIC SCRATCHPADD_GL)
 else()

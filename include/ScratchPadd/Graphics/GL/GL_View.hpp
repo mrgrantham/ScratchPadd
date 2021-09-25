@@ -1,4 +1,43 @@
 #pragma once
+#import <CoreFoundation/CoreFoundation.h>
+
+static std::string getShaderPath(const std::string &&shaderName) {
+#if defined(__APPLE__)
+
+CFBundleRef mainBundle;
+ 
+// Get the main bundle for the app
+mainBundle = CFBundleGetMainBundle();
+CFURLRef    shaderURL;
+// Look for a resource in the main bundle by name and type.
+CFStringRef shaderNameCFStr = CFStringCreateWithCString(NULL,shaderName.c_str(),kCFStringEncodingUTF8);
+
+shaderURL = CFBundleCopyResourceURL( mainBundle,
+                shaderNameCFStr,
+                CFSTR("shader"),
+                NULL );
+
+CFStringRef shaderFilePathStringRef;
+shaderFilePathStringRef = CFURLGetString(shaderURL);
+
+const char * shaderPath = CFStringGetCStringPtr(shaderFilePathStringRef,kCFStringEncodingUTF8);
+std::string shaderPathString(shaderPath);
+std::string URLPrefix = "file://";
+
+std::string::size_type prefixIndex = shaderPathString.find(URLPrefix);
+
+if (prefixIndex != std::string::npos) {
+  spdlog::info("Found the file prefix");
+  shaderPathString.erase(prefixIndex, URLPrefix.length());
+} else {
+  spdlog::error("File prefix not found");
+}
+#else
+auto shaderPathString = std::string("../include/ScratchPadd/Graphics/GL/Shaders/") + shaderName + ".shader";
+#endif
+
+return shaderPathString;
+}
 
 class GL_View : public Graphics::View {
   private:
@@ -13,7 +52,15 @@ class GL_View : public Graphics::View {
     name_ = name;
     frameBuffer_->create(800, 600);
     vertexIndexBuffer_->create(vertices, indices);
-    shader_.generate("../include/ScratchPadd/Graphics/GL/Shaders/vertex.shader", "../include/ScratchPadd/Graphics/GL/Shaders/fragment.shader");
+    shader_.generate(getShaderPath("vertex"), getShaderPath("fragment"));
+  }
+
+  void setBackgroundColor(ImVec4 &backgroundColor) override {
+    frameBuffer_->setBackgroundColor(backgroundColor);
+  }
+
+  ImVec4* getBackgroundColor() override {
+    return frameBuffer_->getBackgroundColor();
   }
 
   void draw() override {
@@ -22,11 +69,7 @@ class GL_View : public Graphics::View {
 
     frameBuffer_->bind();
 
-    // if (mMesh)
-    // {
-    //   mMesh->update(mShader.get());
-    //   mMesh->render();
-    // }
+    shader_.setVec4(shapeColor_,"uniform_color");
     shader_.update();
     vertexIndexBuffer_->draw();
 
