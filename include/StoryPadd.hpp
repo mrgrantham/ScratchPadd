@@ -1,11 +1,12 @@
 #pragma once
 #include <ScratchPadd/Base.hpp>
 #include <spdlog/spdlog.h>
+#include <optional>
 
 class StoryPadd : public ScratchPadd::Base {
   ScratchPadd::Timer performanceTimer_;
   public:
-  virtual void prepare() override {
+  void prepare() override {
     spdlog::info("Preparing: {}",__CLASS_NAME__);
     paddName_ = __CLASS_NAME__;
     setRepeatInterval(1000);
@@ -16,27 +17,55 @@ class StoryPadd : public ScratchPadd::Base {
     spdlog::info("Constructing: {}", __CLASS_NAME__);
   }
 
-  virtual void repeat() override {
+  void repeat() override {
     spdlog::info("Repeating: {}",__CLASS_NAME__);
     performanceTimer_.markInterval();
     spdlog::info("{} firing at {:.3f}s interval",paddName_, performanceTimer_.getAverageIntervalInSeconds(5));
   }
 
-  virtual ~StoryPadd() {
+  ~StoryPadd() {
     spdlog::info("Destroying: {}", __CLASS_NAME__ );
   }
 
-  virtual void starting() override {
-    ScratchPadd::Message_Type::Triangle triangle;
-    send(ScratchPadd::Make_Msg(ScratchPadd::Message_Type::Triangle()));
+  void starting() override {
+    ScratchPadd::MessageType::Triangle triangle;
+    send(ScratchPadd::Make_Msg(triangle));
   }
 
-  virtual void receive(ScratchPadd::Message message) override {
+  void initializeControls() override {
+    controlMap_ = 
+    {
+      {"tellastory",ScratchPadd::ControlType::Double(20.0,std::make_optional(std::make_pair(0.0,200.0)),
+        std::nullopt)},
+      {"aDouble",ScratchPadd::ControlType::Double(20.0,std::make_optional(std::make_pair(0.0,200.0)),
+        [&](double value) {
+          spdlog::info("Got a double: {}", value); 
+        })
+      },
+      {"aString",ScratchPadd::ControlType::String("DefaultString",std::make_optional(std::vector<std::string>({"DefaultString","AnotherString","YetAnother"})),
+        [&](std::string value) {
+          spdlog::info("Got a string: {}", value);
+        })
+      },
+      {"aBool",ScratchPadd::ControlType::Boolean(true,
+        [&](bool value) {
+          spdlog::info("Got a bool: {}", value);
+        })
+      },
+      {"anInt",ScratchPadd::ControlType::Integer(5,std::make_optional(std::make_pair(2,9)),
+        [&](int32_t value) {
+          spdlog::info("Got an int: {}", value);
+        })
+      }
+    };
+  }
+
+  void receive(ScratchPadd::Message message) override {
     ScratchPadd::MessageVariant &messageVariant = *message.get();
-    std::visit(overload{
-        [&](ScratchPadd::Message_Type::Triangle& message)       { std::cout << paddName_ << "Triangle: " << message <<"\n"; },
-        [&](ScratchPadd::Message_Type::Point& message)   { std::cout << paddName_ << "Point: " << message << "\n"; },
-        [&](ScratchPadd::Message_Type::Text& message)       { std::cout << paddName_ << "Text: " << message << "\n"; },
+    std::visit(VariantHandler{
+        [&](ScratchPadd::MessageType::Triangle& message)       { std::cout << paddName_ << "Triangle: " << message <<"\n"; },
+        [&](ScratchPadd::MessageType::Point& message)   { std::cout << paddName_ << "Point: " << message << "\n"; },
+        [&](ScratchPadd::MessageType::Text& message)       { std::cout << paddName_ << "Text: " << message << "\n"; },
         [&](auto& message)       { std::cout << paddName_ << " auto\n"; }
     }, messageVariant);
   }

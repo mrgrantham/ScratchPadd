@@ -13,10 +13,7 @@ class GL_View : public Graphics::View {
     name_ = name;
     frameBuffer_->create(800, 600);
     vertexIndexBuffer_->create(vertices, indices);
-    // shader_.generate(vertexShader, fragmentShader);
-    // shader_.generate("../include/ScratchPadd/Graphics/GL/Shaders/gl_view_vertex.shader", "../include/ScratchPadd/Graphics/GL/Shaders/gl_view_fragment.shader");
     shader_.generate("../include/ScratchPadd/Graphics/GL/Shaders/vertex.shader", "../include/ScratchPadd/Graphics/GL/Shaders/fragment.shader");
-
   }
 
   void draw() override {

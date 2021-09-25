@@ -22,14 +22,14 @@ class TestSendPadd : public ScratchPadd::Base {
   }
 
   virtual void starting() override {
-    ScratchPadd::Message_Type::Triangle triangle;
-    send(ScratchPadd::Make_Msg(ScratchPadd::Message_Type::Triangle()));
+    ScratchPadd::MessageType::Triangle triangle;
+    send(ScratchPadd::Make_Msg(ScratchPadd::MessageType::Triangle()));
   }
 
   virtual void receive(ScratchPadd::Message message) override {
     ScratchPadd::MessageVariant &messageVariant = *message.get();
-    std::visit(overload{
-        [&](ScratchPadd::Message_Type::TestResponse& message)       { std::cout << paddName_ << "TestResponse: " << message <<"\n"; },
+    std::visit(VariantHandler{
+        [&](ScratchPadd::MessageType::TestResponse& message)       { std::cout << paddName_ << "TestResponse: " << message <<"\n"; },
         [&](auto& message)   { std::cout << paddName_ << "Unhandled message\n"; }
     }, messageVariant);
   }

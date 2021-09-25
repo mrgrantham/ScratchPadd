@@ -16,12 +16,15 @@ class AudioPadd : public ScratchPadd::Base {
     spdlog::info("Destroying: {}", __CLASS_NAME__);
   }
 
+  void initializeControls() override {
+  }
+
   virtual void receive(ScratchPadd::Message message) override {
     ScratchPadd::MessageVariant &messageVariant = *message.get();
-    std::visit(overload{
-        [&](ScratchPadd::Message_Type::Triangle& message)       { std::cout << paddName_ << " Triangle: " << message <<"\n"; },
-        [&](ScratchPadd::Message_Type::Point& message)   { std::cout << paddName_ << " Point: " << message << "\n"; },
-        [&](ScratchPadd::Message_Type::Text& message)       { std::cout << paddName_ << " Text: " << message << "\n"; },
+    std::visit(VariantHandler{
+        [&](ScratchPadd::MessageType::Triangle& message)       { std::cout << paddName_ << " Triangle: " << message <<"\n"; },
+        [&](ScratchPadd::MessageType::Point& message)   { std::cout << paddName_ << " Point: " << message << "\n"; },
+        [&](ScratchPadd::MessageType::Text& message)       { std::cout << paddName_ << " Text: " << message << "\n"; },
         [&](auto& message)       { std::cout << paddName_ << " auto\n"; }
     }, messageVariant);
   }

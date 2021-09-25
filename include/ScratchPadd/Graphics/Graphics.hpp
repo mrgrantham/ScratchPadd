@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <ScratchPadd/Message.hpp>
+
 class Graphics {
   public:
   class View {
@@ -10,6 +13,24 @@ class Graphics {
     virtual void setup(const std::string &&name)=0;
     virtual ~View() {}
   };
+
+  class ControlView : public View {
+    protected:
+    ScratchPadd::MessageType::Control controls_;
+    std::vector<std::string> orderedControlVector_;
+    void buildControls(ScratchPadd::MessageType::Control &controls);
+    public:
+    void setControls(ScratchPadd::MessageType::Control &controls);
+  };
+
+  class ViewCollection : View {
+    public:
+    virtual void draw(){}
+    virtual void destroy(){}
+    virtual void reset(){}
+    virtual void setup(const std::string &&name){}
+  };
+
   class FrameBuffer {
     public:
     virtual void create(int32_t width, int32_t height)=0;
@@ -34,6 +55,7 @@ class Graphics {
   };
 
   virtual void setupWindow()=0;
+  virtual void addView(std::unique_ptr<Graphics::View> view)=0;
   virtual bool draw()=0;
   virtual void tearDown()=0;
   virtual ~Graphics(){};

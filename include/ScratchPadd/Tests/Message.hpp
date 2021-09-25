@@ -4,10 +4,10 @@
 #include <iostream>
 
 // This is the namespace for all data structures passed between padds
-#define Message_Types ScratchPadd::Message_Type::Point, ScratchPadd::Message_Type::Triangle, ScratchPadd::Message_Type::Text
+#define MessageTypes ScratchPadd::MessageType::Point, ScratchPadd::MessageType::Triangle, ScratchPadd::MessageType::Text
 
 namespace ScratchPadd {
-  namespace Message_Type {
+  namespace MessageType {
 
     namespace Transform {
       struct Translate {
@@ -57,11 +57,11 @@ namespace ScratchPadd {
     };
   }
 
-using MessageVariant = std::variant<Message_Types>;
+using MessageVariant = std::variant<MessageTypes>;
 using Message = std::shared_ptr<MessageVariant>;
 
-  template<class Message_Type>
-  static Message Make_Msg(Message_Type &&message_type) {
-    return std::make_shared<MessageVariant>(message_type);
+  template<class MessageType>
+  static Message Make_Msg(MessageType &&MessageType) {
+    return std::make_shared<MessageVariant>(MessageType);
   }
 }

@@ -16,7 +16,10 @@ file(GLOB IMGUI_BINDINGS
         ${CONAN_SRC_DIRS_IMGUI}/imgui_impl_glfw.cpp
         ${CONAN_SRC_DIRS_IMGUI}/imgui_impl_opengl3.cpp)
 
-add_executable(${PROJECT_NAME} src/main.cpp
+file(GLOB SRC_FILES src/*.cpp)
+
+
+add_executable(${PROJECT_NAME} ${SRC_FILES}
                           ${IMGUI_BINDINGS})
                           
 if (NOT DEFINED GRAPHICS_BACKEND)

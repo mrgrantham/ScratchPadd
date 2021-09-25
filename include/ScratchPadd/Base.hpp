@@ -7,27 +7,7 @@
 #include <ScratchPadd/EventTimer.hpp>
 #include <boost/lockfree/queue.hpp>
 #include <ScratchPadd/System.hpp>
-
-#ifdef _WIN32
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
-
-inline std::string className(const std::string& classMethod)
-{
-    size_t scopeResolutionOpIndex = classMethod.find("::");
-    if (scopeResolutionOpIndex == std::string::npos) {
-        return "::";
-    }
-    size_t classNameStartIndex = classMethod.substr(0,scopeResolutionOpIndex).rfind(" ") + 1;
-    size_t classNameLength = scopeResolutionOpIndex - classNameStartIndex;
-
-    return classMethod.substr(classNameStartIndex,classNameLength);
-}
-
-#define __CLASS_NAME__ className(__PRETTY_FUNCTION__)
-
-template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
-template<class... Ts> overload(Ts...) -> overload<Ts...>; // line not needed in C++20...
+#include <ScratchPadd/Helper.hpp>
 
 namespace ScratchPadd {
 
@@ -41,11 +21,13 @@ class Base {
   EventTimer repeatingTimer_;
   System* system_;
   boost::lockfree::queue<std::function<void()>*> work_queue_{100};
+  std::unordered_map<std::string,ControlTypeVariant> controlMap_;
 
   public:
   Base(System *system) : system_(system) {
     paddName_ = __CLASS_NAME__;
   }
+
   virtual ~Base() {
     // spdlog gets torn down before the destructor
     // need cout in order to know about destructors called
@@ -53,19 +35,33 @@ class Base {
     repeatingTimer_.stop();
     std::cout <<  "Base() Destroying: " << paddName_ << std::endl;
   }
+
   bool isRunning() {
     return on_;
   }
+
   void start() {
-    spdlog::info("Start: {}", paddName_ );
+    spdlog::info("Start: {}", paddName_);
     if(!runOnMainThread()) {
       workerThread_ = std::thread(&Base::run,this);
     }
     startRepeater();
   }
+
   std::string getName() {
     return paddName_;
   }
+
+  virtual void initializeControls()=0;
+
+  MessageType::Control getControls() {
+    return {paddName_, controlMap_};
+  }
+
+  void broadcastControls() {
+    send(Make_Msg(getControls()));
+  }
+
   virtual bool runOnMainThread() {return false;}
   virtual void config(){}
   virtual void prepare(){}
@@ -84,6 +80,8 @@ class Base {
 
   void startingIfMainThread() {
     if (runOnMainThread()) {
+      initializeControls();
+      broadcastControls();
       starting();
     }
   }
@@ -95,6 +93,8 @@ class Base {
   }
 
   void run() {
+    initializeControls();
+    broadcastControls();
     starting();
     while (on_) {
       loop();

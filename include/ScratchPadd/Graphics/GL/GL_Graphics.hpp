@@ -12,7 +12,7 @@ class GL_Graphics : public Graphics {
     bool show_another_window = false;
     const char* glsl_version = "#version 330 core";
     GL_Shader shader_;
-    GL_View view_;
+    std::vector<std::unique_ptr<View>> views_;
  public:
   GLFWwindow *window;
   void setupWindow() override {
@@ -58,7 +58,14 @@ class GL_Graphics : public Graphics {
     spdlog::info("GL RENDERER: {}", renderer);
     spdlog::info("GL VERSION: {}", version);
     spdlog::info("Status: Using GLEW {}\n", glewGetString(GLEW_VERSION));
-    view_.setup("GL Example");
+    // std::unique_ptr<View> basicView(new GL_View());
+    // views_.emplace_back(basicView);
+    views_.emplace_back(std::make_unique<GL_View>());
+    views_.back()->setup("GL Example");
+  }
+
+  void addView(std::unique_ptr<Graphics::View> view) override {
+    views_.push_back(std::move(view));
   }
 
   bool draw() override {
@@ -70,7 +77,9 @@ class GL_Graphics : public Graphics {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        view_.draw();
+        for (auto &&view: views_) {
+          view->draw();
+        }
         checkOpenGLErrors("After draw");
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
@@ -138,7 +147,9 @@ class GL_Graphics : public Graphics {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    view_.destroy();
+    for (auto &&view: views_) {
+      view->destroy();
+    }
     shader_.destroy();
     glfwDestroyWindow(window);
     glfwTerminate();
