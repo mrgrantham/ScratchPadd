@@ -15,7 +15,6 @@ class GL_FrameBuffer : public Graphics::FrameBuffer {
       if (frameBufferObject_) {
         destroy();
       }
-
       glGenFramebuffers(1, &frameBufferObject_);
       checkOpenGLErrors("glGenFramebuffers");
       glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject_);
@@ -84,10 +83,10 @@ class GL_FrameBuffer : public Graphics::FrameBuffer {
       checkOpenGLErrors("glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject_)");
       glViewport(0, 0, width_, height_);
       checkOpenGLErrors("glViewport");
-      glClearColor(ScratchPadd::Color::Light_Blue.x * ScratchPadd::Color::Light_Blue.w, 
-                    ScratchPadd::Color::Light_Blue.y * ScratchPadd::Color::Light_Blue.w, 
-                    ScratchPadd::Color::Light_Blue.z * ScratchPadd::Color::Light_Blue.w, 
-                    ScratchPadd::Color::Light_Blue.w);
+      glClearColor(backgroundColor_.x * backgroundColor_.w, 
+                    backgroundColor_.y * backgroundColor_.w, 
+                    backgroundColor_.z * backgroundColor_.w, 
+                    backgroundColor_.w);
 
       checkOpenGLErrors("glClearColor");
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

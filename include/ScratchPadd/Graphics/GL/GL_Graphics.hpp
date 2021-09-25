@@ -6,6 +6,9 @@
 #include <imgui_impl_opengl3.h>
 
 class GL_Graphics : public Graphics {
+    ImVec4 appBackground = ScratchPadd::Color::Light_Gray;
+    ImVec4 *viewShapeColor = nullptr;
+    ImVec4 *viewBackgroundColor = nullptr;
 
     // Our state
     bool show_demo_window = true;
@@ -58,10 +61,10 @@ class GL_Graphics : public Graphics {
     spdlog::info("GL RENDERER: {}", renderer);
     spdlog::info("GL VERSION: {}", version);
     spdlog::info("Status: Using GLEW {}\n", glewGetString(GLEW_VERSION));
-    // std::unique_ptr<View> basicView(new GL_View());
-    // views_.emplace_back(basicView);
     views_.emplace_back(std::make_unique<GL_View>());
     views_.back()->setup("GL Example");
+    viewBackgroundColor = views_.back()->getBackgroundColor();
+    viewShapeColor = views_.back()->getShapeColor();
   }
 
   void addView(std::unique_ptr<Graphics::View> view) override {
@@ -97,9 +100,9 @@ class GL_Graphics : public Graphics {
             ImGui::Checkbox("Another Window", &show_another_window);
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("gl window color", (float*)&ScratchPadd::Color::Light_Blue); // Edit 3 floats representing a color
-            ImGui::ColorEdit3("app background color", (float*)&ScratchPadd::Color::App_Background); // Edit 3 floats representing a color
-            ImGui::ColorEdit3("gl shape color", (float*)&ScratchPadd::Color::Shape_Color); // Edit 3 floats representing a color
+            ImGui::ColorEdit3("app background color", (float*)&appBackground); // Edit 3 floats representing a color
+            ImGui::ColorEdit3("gl window color", (float*)viewBackgroundColor); // Edit 3 floats representing a color
+            ImGui::ColorEdit3("gl shape color", (float*)viewShapeColor); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                 counter++;
@@ -125,10 +128,10 @@ class GL_Graphics : public Graphics {
       int display_w, display_h;
       glfwGetFramebufferSize(window, &display_w, &display_h);
       glViewport(0, 0, display_w, display_h);
-      glClearColor(ScratchPadd::Color::App_Background.x * ScratchPadd::Color::App_Background.w, 
-                    ScratchPadd::Color::App_Background.y * ScratchPadd::Color::App_Background.w, 
-                    ScratchPadd::Color::App_Background.z * ScratchPadd::Color::App_Background.w, 
-                    ScratchPadd::Color::App_Background.w);
+      glClearColor(appBackground.x * appBackground.w, 
+                    appBackground.y * appBackground.w, 
+                    appBackground.z * appBackground.w, 
+                    appBackground.w);
       glClear(GL_COLOR_BUFFER_BIT);
       checkOpenGLErrors("before glDrawArrays");
       // glDrawArrays(GL_TRIANGLES, 0, 3);

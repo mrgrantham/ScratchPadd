@@ -4,7 +4,11 @@
 #include <iostream>
 #include <variant>
 #include <optional>
+#include <vector>
 #include <functional>
+#include <unordered_map>
+#include <string>
+#include <spdlog/spdlog.h>
 #include <ScratchPadd/Helper.hpp>
 
 // This is the namespace for all data structures passed between padds

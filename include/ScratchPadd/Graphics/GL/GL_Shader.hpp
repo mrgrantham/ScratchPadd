@@ -2,8 +2,9 @@
 #include <GL/glew.h> 
 #include <filesystem>
 #include <fstream>
+#include <spdlog/spdlog.h>
 
-std::string vertexShader =
+const std::string vertexShader =
     "#version 330 core\n"
     "\n"
     "layout(location = 0) in vec4 position;\n"
@@ -13,7 +14,7 @@ std::string vertexShader =
     "   gl_Position = position;\n"
     "}\n";
 
-std::string fragmentShader =
+const std::string fragmentShader =
     "#version 330 core\n"
     "\n"
     "layout(location = 0) out vec4 color;"
@@ -48,8 +49,10 @@ class GL_Shader {
     return id;
   }
   public:
-  void generate(const std::string &vertexShaderFile, const std::string &fragmentShaderFile) {
+  void generate(const std::string &&vertexShaderFile, const std::string &&fragmentShaderFile) {
     spdlog::info("Current Path: {}",std::filesystem::current_path().string());
+    spdlog::info("vertexShaderFile: {}",vertexShaderFile);
+    spdlog::info("fragmentShaderFile: {}",fragmentShaderFile);
 
     std::filesystem::path vertexShaderFilePath(vertexShaderFile);
     std::error_code vertexShaderFileError;
@@ -97,7 +100,7 @@ class GL_Shader {
   }
 
   void update() {
-    setVec4(ScratchPadd::Color::Shape_Color,"uniform_color");
+    // setVec4(ScratchPadd::Color::Shape_Color,"uniform_color");
   }
   void setVec4(const ImVec4& vec4, const std::string& name)
 	{

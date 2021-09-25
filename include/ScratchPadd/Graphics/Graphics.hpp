@@ -1,12 +1,19 @@
 #pragma once
 
 #include <string>
+#include <imgui.h>
+#include <ScratchPadd/Graphics/Colors.hpp>
 #include <ScratchPadd/Message.hpp>
 
 class Graphics {
   public:
   class View {
+    protected:
+    ImVec4 shapeColor_{ScratchPadd::Color::Red};
     public:
+    virtual void setBackgroundColor(ImVec4 &backgroundColor)=0;
+    virtual ImVec4* getBackgroundColor()=0;
+    ImVec4* getShapeColor() {return &shapeColor_;}
     virtual void draw()=0;
     virtual void destroy()=0;
     virtual void reset()=0;
@@ -20,6 +27,8 @@ class Graphics {
     std::vector<std::string> orderedControlVector_;
     void buildControls(ScratchPadd::MessageType::Control &controls);
     public:
+    void setBackgroundColor(ImVec4 &backgroundColor) override {};
+    ImVec4* getBackgroundColor() override {return {};};
     void setControls(ScratchPadd::MessageType::Control &controls);
   };
 
@@ -32,7 +41,11 @@ class Graphics {
   };
 
   class FrameBuffer {
+    protected:
+    ImVec4 backgroundColor_{ScratchPadd::Color::Blue};
     public:
+    ImVec4* getBackgroundColor() {return &backgroundColor_;}
+    void setBackgroundColor(ImVec4 &backgroundColor) {backgroundColor_ = backgroundColor;}
     virtual void create(int32_t width, int32_t height)=0;
     virtual void destroy()=0;
     virtual uint32_t get()=0;

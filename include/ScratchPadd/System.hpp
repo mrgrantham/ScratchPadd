@@ -4,7 +4,7 @@
 #pragma warning "Using Scratchpadd Test Messages"
 #include <ScratchPadd/Tests/Message.hpp>
 #else
-#include <Message.hpp>
+#include <ScratchPadd/Message.hpp>
 #endif
 namespace ScratchPadd {
 class Base;

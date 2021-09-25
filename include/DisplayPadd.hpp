@@ -2,7 +2,7 @@
 #include <ScratchPadd/Base.hpp>
 #include <spdlog/spdlog.h>
 #include <ScratchPadd/Timer.hpp>
-#include <Message.hpp>
+#include <ScratchPadd/Message.hpp>
 #include <ScratchPadd/Graphics/Graphics.hpp>
 class DisplayPadd : public ScratchPadd::Base {
 private:
