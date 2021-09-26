@@ -126,8 +126,8 @@ class Base {
   void startRepeater() {
     if (repeating_interval_) {
       spdlog::info("repeat() interval set to {}",repeating_interval_);
-      repeatingTimer_.startRepeatingEvent([=]{
-        std::function<void()> *work = new std::function<void()>([=]{
+      repeatingTimer_.startRepeatingEvent([=,this]{
+        std::function<void()> *work = new std::function<void()>([=,this]{
           this->repeat();
         });
         work_queue_.push(work);

@@ -8,7 +8,7 @@ class EventTimer {
   public:
   template <typename Event>
   void startRepeatingEvent(const Event &event, int interval_between_events) {
-    timer_thread_ = std::thread([=]{
+    timer_thread_ = std::thread([=,this]{
       while (should_stop_ == false) {
         std::this_thread::sleep_for(std::chrono::milliseconds(interval_between_events));
         if (should_stop_) break;
@@ -21,7 +21,7 @@ class EventTimer {
 
   template <typename Event>
   void startTimedEvent(const Event &event, int delay_until_event) {
-    timer_thread_ = std::thread([=]{
+    timer_thread_ = std::thread([=,this]{
       if (should_stop_) return;
       std::this_thread::sleep_for(std::chrono::milliseconds(delay_until_event));
       if (should_stop_) return;

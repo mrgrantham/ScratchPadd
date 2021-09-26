@@ -1,5 +1,7 @@
 #pragma once
+#if defined(__APPLE__)
 #import <CoreFoundation/CoreFoundation.h>
+#endif
 
 static std::string getShaderPath(const std::string &&shaderName) {
 #if defined(__APPLE__)

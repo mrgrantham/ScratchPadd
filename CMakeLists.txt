@@ -40,8 +40,11 @@ message(STATUS "Tests: ${TESTS}")
 target_compile_definitions(${PROJECT_NAME} PUBLIC PROJECT_NAME="${PROJECT_NAME}")
 
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 target_compile_options(${PROJECT_NAME} PUBLIC -Werror=inconsistent-missing-override
                                                 -Werror=delete-abstract-non-virtual-dtor)
+endif()
+
 
 target_include_directories(${PROJECT_NAME} 
         PUBLIC include

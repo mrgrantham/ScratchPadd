@@ -2,6 +2,7 @@
 
 #include <string>
 #include <imgui.h>
+#include <spdlog/spdlog.h>
 #include <ScratchPadd/Graphics/Colors.hpp>
 #include <ScratchPadd/Message.hpp>
 
