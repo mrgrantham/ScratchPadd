@@ -77,9 +77,9 @@ namespace ScratchPadd {
     }
 
     std::chrono::duration<double> getAverageInterval(int samples=0) {
-      int intervalSampleCount = (samples < intervals_.size() || samples != 0 ) ? samples : intervals_.size();
+      int intervalSampleCount = (samples < intervals_.size() && samples != 0 ) ? samples : intervals_.size();
       std::vector<std::chrono::duration<double>> intervalSamples(intervals_.end() - intervalSampleCount, intervals_.end());
-      std::chrono::duration<double> interval_sum;
+      std::chrono::duration<double> interval_sum(std::chrono::milliseconds(0));
       for (auto &interval: intervalSamples) {
         interval_sum += interval;
       }
