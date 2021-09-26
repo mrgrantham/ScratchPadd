@@ -32,7 +32,6 @@ class Base {
     // spdlog gets torn down before the destructor
     // need cout in order to know about destructors called
     // spdlog::info("Destroying: {}", __CLASS_NAME__);
-    repeatingTimer_.stop();
     std::cout <<  "Base() Destroying: " << paddName_ << std::endl;
   }
 
@@ -146,6 +145,7 @@ class Base {
   void stop() {
     spdlog::info("Stopping: {}", paddName_ );
     on_ = false;
+    repeatingTimer_.stop();
     if (workerThread_.joinable()) {
       workerThread_.join();
     }
