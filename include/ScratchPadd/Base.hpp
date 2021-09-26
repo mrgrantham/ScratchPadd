@@ -109,7 +109,7 @@ class Base {
 
   void loop() {
       std::function<void()> *work = nullptr;
-      while(work_queue_.pop(work)) {
+      while(work_queue_.pop(work) && on_) {
         if (!work) spdlog::error("work is null");
         work->operator()();
         delete work;
