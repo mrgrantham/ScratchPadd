@@ -14,7 +14,7 @@ While the project is written ultimately with cross platform support in mind, it 
 
 ## Setup ##
 
-### Prerquisites ###
+### Prerequisites ###
 
 The following are currently necesary to get started with minimal problems.
 
@@ -34,6 +34,20 @@ brew install cmake
 
 To setup this project it is advised that you are using macOS 10.15 to build.
 
+For Ubuntu 20.04 you can used the following
+
+``` bash
+sudo apt update
+sudo apt install python3
+sudo apt install python3-pip
+python3 -m pip install conan
+# apt only installs 3.16 on Ubuntu 20.04 LTS so snap is needed to install 3.20 or higher
+sudo snap install cmake
+```
+
+Add modify your PATH variable as instructed to allow you to run conan cli
+
+
 
 ### Building ###
 
@@ -43,6 +57,11 @@ git clone https://github.com/mrgrantham/ScratchPadd.git
 cd ScratchPadd
 mkdir build
 cd build
+
+# --probably only needed on ubuntu--
+conan profile update settings.compiler.libcxx=libstdc++11 default 
+# ----------------------------------
+
 conan install ..
 cmake ..
 cmake --build .
