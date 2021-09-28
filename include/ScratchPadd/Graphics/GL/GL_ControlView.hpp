@@ -4,7 +4,7 @@ class GL_ControlView : public Graphics::ControlView {
   
   public:
   void draw() override {
-    ImGui::SetNextWindowSizeConstraints({20,20},{-1,-1});
+    ImGui::SetNextWindowSize({300,150},ImGuiCond_FirstUseEver);
     ImGui::Begin(controls_.sourceName.c_str());
     buildControls(controls_);
     ImGui::End();
