@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.20)
 include(cmake/helpers.cmake)
 
 project(ScratchPadd)
-set(CMAKE_CXX_STANDARD 20)
 
 message("Language Version: C++${CMAKE_CXX_STANDARD}")
 
@@ -25,6 +24,9 @@ elseif(UNIX)
         include(cmake/linux.cmake)
 endif()
 
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20
+                                                  CXX_STANDARD_REQUIRED ON)
+
 if (NOT DEFINED GRAPHICS_BACKEND)
         target_compile_definitions(${PROJECT_NAME} PUBLIC SCRATCHPADD_GL)
 else()
@@ -41,7 +43,8 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC PROJECT_NAME="${PROJECT_NAME}"
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-target_compile_options(${PROJECT_NAME} PUBLIC -Werror=inconsistent-missing-override
+target_compile_options(${PROJECT_NAME} PUBLIC   -Werror
+                                                -Werror=inconsistent-missing-override
                                                 -Werror=delete-abstract-non-virtual-dtor)
 endif()
 
