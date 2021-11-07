@@ -64,7 +64,7 @@ conan profile update settings.compiler.libcxx=libstdc++11 default
 
 conan install ..
 cmake ..
-cmake --build .
+cmake --build . --clean-first --parallel 4 -- VERBOSE=1
 
 # Run
 ./bin/ScratchPadd
